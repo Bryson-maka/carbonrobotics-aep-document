@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Engineering & Performance Team Scope</title>
     <style>
+        /* Color palette from Carbon Robotics UI */
+        :root {
+            /* Primary accent (top nav bar) */
+            --color-accent:        #A9421F;   /* rgb(169, 66, 31) */
+            /* Accent hover state */
+            --color-accent-hover:  #87422D;   /* rgb(135, 66, 45) */
+            
+            /* Dark primary background */
+            --color-bg-primary:    #111518;   /* rgb(17, 21, 24) */
+            /* Sidebar & table rows */
+            --color-bg-sidebar:    #323F48;   /* rgb(50, 63, 72) */
+            /* Surface / panel headers */
+            --color-bg-surface:    #52525B;   /* rgb(82, 82, 91) */
+            
+            /* Text colors */
+            --color-text-primary:  #FFFFFF;
+            --color-text-secondary:#C6C7C8;   /* rgb(198,199,200) */
+            
+            /* Borders & muted elements */
+            --color-border:        #3C3C3C;   /* rgb(60,60,60) */
+            
+            /* Progress indicators */
+            --color-progress-red:    #dc3545;
+            --color-progress-orange: #fd7e14;
+            --color-progress-yellow: #ffc107;
+            --color-progress-green:  #28a745;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,8 +42,8 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--color-text-primary);
+            background: var(--color-bg-primary);
             min-height: 100vh;
             padding: 20px;
         }
@@ -23,14 +51,14 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: var(--color-bg-sidebar);
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
             color: white;
             padding: 40px;
             text-align: center;
@@ -57,16 +85,16 @@
         }
 
         .controls {
-            background: #f8f9fa;
+            background: var(--color-bg-surface);
             padding: 15px 40px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--color-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .edit-toggle {
-            background: #667eea;
+            background: var(--color-accent);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -77,7 +105,7 @@
         }
 
         .edit-toggle:hover {
-            background: #764ba2;
+            background: var(--color-accent-hover);
         }
 
         .edit-toggle.active {
@@ -102,26 +130,32 @@
 
         .executive-summary {
             padding: 40px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            background: var(--color-bg-surface);
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-primary);
         }
 
         .executive-summary h2 {
-            color: #2c3e50;
+            color: var(--color-text-primary);
             margin-bottom: 20px;
             font-size: 1.8em;
         }
 
+        .executive-summary p {
+            color: var(--color-text-secondary);
+        }
+
         .mission-box {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            background: rgba(169, 66, 31, 0.1);
             padding: 25px;
             border-radius: 10px;
             margin-top: 20px;
-            border-left: 5px solid #2196f3;
+            border-left: 5px solid var(--color-accent);
+            color: var(--color-text-primary);
         }
 
         .mission-box strong {
-            color: #1976d2;
+            color: var(--color-accent);
         }
 
         .accordion {
@@ -130,18 +164,19 @@
 
         .accordion-item {
             margin-bottom: 15px;
-            border: 1px solid #e9ecef;
+            border: 1px solid var(--color-border);
             border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s ease;
+            background: var(--color-bg-surface);
         }
 
         .accordion-item:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .accordion-header {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: var(--color-bg-surface);
             padding: 20px 25px;
             cursor: pointer;
             display: flex;
@@ -153,15 +188,16 @@
             text-align: left;
             font-size: 1.1em;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--color-text-primary);
+            position: relative;
         }
 
         .accordion-header:hover {
-            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            background: rgba(169, 66, 31, 0.1);
         }
 
         .accordion-header.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--color-accent);
             color: white;
         }
 
@@ -174,15 +210,31 @@
             transform: rotate(180deg);
         }
 
+        /* Progress indicator */
+        .progress-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .progress-0 { background-color: var(--color-progress-red); }
+        .progress-25 { background-color: var(--color-progress-orange); }
+        .progress-50 { background-color: var(--color-progress-yellow); }
+        .progress-75 { background-color: var(--color-progress-yellow); }
+        .progress-100 { background-color: var(--color-progress-green); }
+
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease;
-            background: white;
+            background: var(--color-bg-sidebar);
         }
 
         .accordion-content.active {
-            max-height: 2500px;
+            max-height: none;
         }
 
         .accordion-body {
@@ -194,20 +246,27 @@
         }
 
         .subsection h4 {
-            color: #495057;
+            color: var(--color-text-primary);
             margin-bottom: 15px;
             font-size: 1.1em;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid var(--color-border);
             padding-bottom: 5px;
         }
 
         /* Consistent Outstanding Question Styling */
         .outstanding-question {
-            background: #fff3cd;
+            background: rgba(220, 53, 69, 0.1);
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid var(--color-progress-red);
+            color: var(--color-text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .outstanding-question.answered {
+            background: rgba(40, 167, 69, 0.1);
+            border-left-color: var(--color-progress-green);
         }
 
         .outstanding-question .question-header {
@@ -217,43 +276,54 @@
         }
 
         .outstanding-question .warning-icon {
-            color: #856404;
+            color: var(--color-progress-red);
             margin-right: 8px;
             font-size: 1.1em;
         }
 
+        .outstanding-question.answered .warning-icon {
+            color: var(--color-progress-green);
+        }
+
         .outstanding-question strong {
-            color: #856404;
+            color: var(--color-text-primary);
+        }
+
+        .outstanding-question ul {
+            color: var(--color-text-secondary);
         }
 
         /* Regular established facts/current state */
         .current-state {
-            background: #e8f5e8;
+            background: rgba(40, 167, 69, 0.1);
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
-            border-left: 4px solid #28a745;
+            border-left: 4px solid var(--color-progress-green);
+            color: var(--color-text-primary);
         }
 
         .phase-item {
-            background: #f1f3f4;
+            background: var(--color-bg-surface);
             padding: 20px;
             margin: 15px 0;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid var(--color-accent);
+            color: var(--color-text-primary);
         }
 
         .phase-item h4 {
-            color: #2c3e50;
+            color: var(--color-text-primary);
             margin-bottom: 10px;
         }
 
         .success-metric {
-            background: #e8f5e8;
+            background: rgba(40, 167, 69, 0.1);
             padding: 10px 15px;
             margin: 8px 0;
             border-radius: 5px;
-            border-left: 3px solid #28a745;
+            border-left: 3px solid var(--color-progress-green);
+            color: var(--color-text-primary);
         }
 
         /* Edit Mode Styles */
@@ -262,21 +332,18 @@
             min-height: 80px;
             margin-top: 10px;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border);
             border-radius: 5px;
             font-family: inherit;
             font-size: 0.9em;
             resize: vertical;
             display: none;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
         }
 
         .edit-mode .answer-input {
             display: block;
-        }
-
-        .answered {
-            background: #d1ecf1;
-            border-left-color: #17a2b8;
         }
 
         ul, ol {
@@ -292,14 +359,14 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #667eea;
+            background: var(--color-accent);
             color: white;
             border: none;
             border-radius: 50%;
             width: 50px;
             height: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
             opacity: 0;
             visibility: hidden;
@@ -311,8 +378,19 @@
         }
 
         .scroll-top:hover {
-            background: #764ba2;
+            background: var(--color-accent-hover);
             transform: translateY(-2px);
+        }
+
+        /* Completion badge */
+        .completion-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 10px;
+            font-weight: normal;
+            background: rgba(255,255,255,0.1);
         }
 
         @media (max-width: 768px) {
@@ -367,7 +445,7 @@
                 <button class="edit-toggle" onclick="toggleEditMode()">📝 Enable Interactive Mode</button>
                 <button class="save-btn" onclick="saveAnswers()">💾 Save Answers</button>
             </div>
-            <div style="font-size: 0.9em; color: #666;">
+            <div style="font-size: 0.9em; color: var(--color-text-secondary);">
                 ⚠️ = Outstanding Questions • ✅ = Current Capabilities
             </div>
         </div>
@@ -384,8 +462,9 @@
         <div class="accordion">
             <!-- Section 1: Performance Standards & Measurement -->
             <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>1. Performance Standards & Measurement</span>
+                <button class="accordion-header" data-section="performance-standards">
+                    <div class="progress-indicator"></div>
+                    <span>1. Performance Standards & Measurement <span class="completion-badge">0%</span></span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
@@ -441,8 +520,9 @@
 
             <!-- Section 2: Configuration & Customer Experience -->
             <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>2. Configuration & Customer Experience</span>
+                <button class="accordion-header" data-section="configuration-experience">
+                    <div class="progress-indicator"></div>
+                    <span>2. Configuration & Customer Experience <span class="completion-badge">0%</span></span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
@@ -509,8 +589,9 @@
 
             <!-- Section 3: Monitoring & Proactive Intervention -->
             <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>3. Monitoring & Proactive Intervention</span>
+                <button class="accordion-header" data-section="monitoring-intervention">
+                    <div class="progress-indicator"></div>
+                    <span>3. Monitoring & Proactive Intervention <span class="completion-badge">0%</span></span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
@@ -577,8 +658,9 @@
 
             <!-- Section 4: Responsibility & Ownership Framework -->
             <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>4. Responsibility & Ownership Framework</span>
+                <button class="accordion-header" data-section="responsibility-framework">
+                    <div class="progress-indicator"></div>
+                    <span>4. Responsibility & Ownership Framework <span class="completion-badge">0%</span></span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
@@ -651,8 +733,9 @@
 
             <!-- Section 5: Technical Implementation -->
             <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>5. Technical Implementation & Team Structure</span>
+                <button class="accordion-header" data-section="technical-implementation">
+                    <div class="progress-indicator"></div>
+                    <span>5. Technical Implementation & Team Structure <span class="completion-badge">0%</span></span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
@@ -699,7 +782,7 @@
                                 </ul>
                             </div>
 
-                            <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                            <div style="background: rgba(40, 167, 69, 0.1); padding: 20px; border-radius: 8px; margin: 15px 0;">
                                 <strong>Success Metrics for AEP Team:</strong>
                                 <div class="success-metric"><strong>Customer Performance Satisfaction:</strong> >95% meeting stated objectives</div>
                                 <div class="success-metric"><strong>Configuration Success Rate:</strong> <15min time-to-optimal-settings</div>
@@ -713,8 +796,9 @@
 
             <!-- Section 6: Implementation Roadmap -->
             <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>6. Implementation Roadmap & Next Steps</span>
+                <button class="accordion-header" data-section="implementation-roadmap">
+                    <div class="progress-indicator"></div>
+                    <span>6. Implementation Roadmap & Next Steps <span class="completion-badge">0%</span></span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
@@ -746,7 +830,7 @@
                             </ul>
                         </div>
 
-                        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 5px solid #ffc107;">
+                        <div style="background: rgba(220, 53, 69, 0.1); padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 5px solid var(--color-progress-red);">
                             <h4>⚠️ Immediate Actions Required:</h4>
                             <ol>
                                 <li><strong>Team Workshop:</strong> Schedule session to address outstanding questions</li>
@@ -766,6 +850,43 @@
     <script>
         let editMode = false;
 
+        // Initialize completion tracking
+        function updateCompletionStatus() {
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                const section = header.parentElement;
+                const questions = section.querySelectorAll('.outstanding-question');
+                const answered = section.querySelectorAll('.outstanding-question.answered');
+                
+                const percentage = questions.length > 0 ? Math.round((answered.length / questions.length) * 100) : 0;
+                
+                // Update badge text
+                const badge = header.querySelector('.completion-badge');
+                if (badge) {
+                    badge.textContent = `${percentage}%`;
+                }
+                
+                // Update progress indicator color
+                const progressIndicator = header.querySelector('.progress-indicator');
+                if (progressIndicator) {
+                    // Remove all progress classes
+                    progressIndicator.classList.remove('progress-0', 'progress-25', 'progress-50', 'progress-75', 'progress-100');
+                    
+                    // Add appropriate class based on percentage
+                    if (percentage === 0) {
+                        progressIndicator.classList.add('progress-0');
+                    } else if (percentage < 25) {
+                        progressIndicator.classList.add('progress-25');
+                    } else if (percentage < 50) {
+                        progressIndicator.classList.add('progress-50');
+                    } else if (percentage < 100) {
+                        progressIndicator.classList.add('progress-75');
+                    } else {
+                        progressIndicator.classList.add('progress-100');
+                    }
+                }
+            });
+        }
+
         // Improved accordion functionality with scroll position preservation
         function initializeAccordion() {
             const accordionHeaders = document.querySelectorAll('.accordion-header');
@@ -774,12 +895,12 @@
                 header.addEventListener('click', (e) => {
                     e.preventDefault();
                     
-                    // Store current scroll position relative to the header
-                    const headerTop = header.getBoundingClientRect().top + window.pageYOffset;
-                    const currentScrollOffset = window.pageYOffset - headerTop;
-                    
                     const content = header.nextElementSibling;
                     const isActive = header.classList.contains('active');
+                    
+                    // Store the header position before toggling
+                    const headerRect = header.getBoundingClientRect();
+                    const headerTop = window.pageYOffset + headerRect.top;
                     
                     // Close all other accordions
                     accordionHeaders.forEach(otherHeader => {
@@ -797,14 +918,15 @@
                         header.classList.add('active');
                         content.classList.add('active');
                         
-                        // Maintain scroll position at the header after expansion
+                        // After a brief delay to allow for content expansion,
+                        // ensure the header is visible at the top of the viewport
                         setTimeout(() => {
-                            const newHeaderTop = header.getBoundingClientRect().top + window.pageYOffset;
+                            const offset = 20; // Small offset from top
                             window.scrollTo({
-                                top: newHeaderTop,
+                                top: headerTop - offset,
                                 behavior: 'smooth'
                             });
-                        }, 50); // Small delay to allow content to expand
+                        }, 10);
                     }
                 });
             });
@@ -839,9 +961,24 @@
                 if (textarea && textarea.value.trim()) {
                     answers[questionId] = textarea.value.trim();
                     questionEl.classList.add('answered');
+                    
+                    // Update warning icon to check mark
+                    const icon = questionEl.querySelector('.warning-icon');
+                    if (icon) {
+                        icon.textContent = '✅';
+                    }
+                } else {
+                    questionEl.classList.remove('answered');
+                    const icon = questionEl.querySelector('.warning-icon');
+                    if (icon) {
+                        icon.textContent = '⚠️';
+                    }
                 }
             });
             localStorage.setItem('aep-answers', JSON.stringify(answers));
+            
+            // Update completion status
+            updateCompletionStatus();
             
             // Show save confirmation
             const saveBtn = document.querySelector('.save-btn');
@@ -863,9 +1000,18 @@
                         if (textarea) {
                             textarea.value = answer;
                             questionEl.classList.add('answered');
+                            
+                            // Update warning icon to check mark
+                            const icon = questionEl.querySelector('.warning-icon');
+                            if (icon) {
+                                icon.textContent = '✅';
+                            }
                         }
                     }
                 });
+                
+                // Update completion status after loading
+                updateCompletionStatus();
             }
         }
 
@@ -889,17 +1035,35 @@
             });
         }
 
+        // Auto-save functionality
+        function initializeAutoSave() {
+            if (!editMode) return;
+            
+            let saveTimeout;
+            document.querySelectorAll('.answer-input').forEach(textarea => {
+                textarea.addEventListener('input', () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => {
+                        saveAnswers();
+                    }, 2000); // Auto-save after 2 seconds of inactivity
+                });
+            });
+        }
+
         // Initialize everything when page loads
         window.addEventListener('load', () => {
             initializeAccordion();
             initializeScrollTop();
+            updateCompletionStatus();
             
             // Auto-expand first section
             const firstHeader = document.querySelector('.accordion-header');
-            const firstContent = firstHeader.nextElementSibling;
-            firstHeader.classList.add('active');
-            firstContent.classList.add('active');
+            if (firstHeader) {
+                const firstContent = firstHeader.nextElementSibling;
+                firstHeader.classList.add('active');
+                firstContent.classList.add('active');
+            }
         });
     </script>
 </body>
-</html> 
+</html>
