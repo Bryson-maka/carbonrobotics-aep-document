@@ -56,6 +56,50 @@
             opacity: 0.8;
         }
 
+        .controls {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-toggle {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+        }
+
+        .edit-toggle:hover {
+            background: #764ba2;
+        }
+
+        .edit-toggle.active {
+            background: #28a745;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 10px;
+            display: none;
+        }
+
+        .save-btn:hover {
+            background: #218838;
+        }
+
         .executive-summary {
             padding: 40px;
             background: #f8f9fa;
@@ -133,12 +177,12 @@
         .accordion-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: max-height 0.4s ease;
             background: white;
         }
 
         .accordion-content.active {
-            max-height: 2000px;
+            max-height: 2500px;
         }
 
         .accordion-body {
@@ -157,43 +201,38 @@
             padding-bottom: 5px;
         }
 
-        .question-item {
-            background: #f8f9fa;
+        /* Consistent Outstanding Question Styling */
+        .outstanding-question {
+            background: #fff3cd;
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #ffc107;
         }
 
-        .question-item strong {
-            color: #2c3e50;
+        .outstanding-question .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
+        .outstanding-question .warning-icon {
+            color: #856404;
+            margin-right: 8px;
+            font-size: 1.1em;
+        }
+
+        .outstanding-question strong {
+            color: #856404;
+        }
+
+        /* Regular established facts/current state */
         .current-state {
             background: #e8f5e8;
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
             border-left: 4px solid #28a745;
-        }
-
-        .ready-indicator {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .ready-yes {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .ready-needs-dev {
-            background: #fff3cd;
-            color: #856404;
         }
 
         .phase-item {
@@ -217,12 +256,27 @@
             border-left: 3px solid #28a745;
         }
 
-        .next-steps {
-            background: #fff3cd;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 5px solid #ffc107;
+        /* Edit Mode Styles */
+        .answer-input {
+            width: 100%;
+            min-height: 80px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.9em;
+            resize: vertical;
+            display: none;
+        }
+
+        .edit-mode .answer-input {
+            display: block;
+        }
+
+        .answered {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
         }
 
         ul, ol {
@@ -287,6 +341,12 @@
             .executive-summary {
                 padding: 30px 20px;
             }
+
+            .controls {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -296,15 +356,25 @@
             <h1>Advanced Engineering & Performance</h1>
             <div class="subtitle">Carbon Robotics LaserWeeder Platform</div>
             <div class="meta">
-                <div>Document Version: 1.0</div>
-                <div>Date: 2025-06-30</div>
-                <div>Status: Review & Alignment</div>
+                <div>Document Version: 2.0</div>
+                <div>Date: 2025-01-09</div>
+                <div>Status: Streamlined for Team Discussion</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div>
+                <button class="edit-toggle" onclick="toggleEditMode()">📝 Enable Interactive Mode</button>
+                <button class="save-btn" onclick="saveAnswers()">💾 Save Answers</button>
+            </div>
+            <div style="font-size: 0.9em; color: #666;">
+                ⚠️ = Outstanding Questions • ✅ = Current Capabilities
             </div>
         </div>
 
         <div class="executive-summary">
             <h2>Executive Summary</h2>
-            <p>The Advanced Engineering & Performance team is intended to establish <strong>data-driven performance excellence</strong> across the Carbon Robotics LaserWeeder fleet. This team will bridge the gap between technical capability and customer success by defining, measuring, and optimizing the performance relationship between customer expectations and actual machine performance.</p>
+            <p>The Advanced Engineering & Performance team will establish <strong>data-driven performance excellence</strong> across the Carbon Robotics LaserWeeder fleet. This team bridges the gap between technical capability and customer success by defining, measuring, and optimizing the performance relationship between customer expectations and actual machine performance.</p>
             
             <div class="mission-box">
                 <strong>Mission:</strong> Transform Carbon Robotics from reactive support to predictive performance optimization through systematic measurement, analysis, and continuous improvement based on field operations and remote visibility.
@@ -312,261 +382,267 @@
         </div>
 
         <div class="accordion">
-            <!-- Section 1: Foundational Questions -->
+            <!-- Section 1: Performance Standards & Measurement -->
             <div class="accordion-item">
                 <button class="accordion-header">
-                    <span>1. Foundational Questions</span>
+                    <span>1. Performance Standards & Measurement</span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
                     <div class="accordion-body">
                         <div class="subsection">
-                            <h4>Performance Definitions</h4>
+                            <h4>Success Definition & Ownership</h4>
                             
-                            <div class="question-item">
-                                <strong>Q1: Customer Success Definition</strong><br>
+                            <div class="outstanding-question" data-question="customer-success-definition">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Customer Success Definition</strong>
+                                </div>
                                 What constitutes "successful weeding" from the customer's perspective?
                                 <ul>
-                                    <li>Weed detection vs. elimination percentage? (e.g., >99% weeding performance accuracy)</li>
-                                    <li>Crop damage tolerance? (e.g., <1% crops shot)</li>
-                                    <li>Field coverage efficiency? (e.g., acres/hour target based on entry timing, weed pressure, and banding configuration)</li>
+                                    <li>Weed elimination percentage threshold (e.g., >99% accuracy)</li>
+                                    <li>Crop damage tolerance (e.g., <1% crops affected)</li>
+                                    <li>Field coverage efficiency (acres/hour based on conditions)</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q2: Performance Measurement Ownership</strong><br>
-                                Who owns the definition of "good performance" - Carbon or the customer?
+                            <div class="outstanding-question" data-question="performance-ownership">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Performance Standard Ownership</strong>
+                                </div>
+                                Who defines "good performance" - Carbon or customer?
                                 <ul>
                                     <li>How should Carbon establish standard benchmarks?</li>
-                                    <li>How do customer's define their success? (highly variable)</li>
-                                    <li>How do we handle conflicting expectations pre and post sale?</li>
+                                    <li>How do customers define their individual success criteria?</li>
+                                    <li>How do we handle conflicting expectations pre/post sale?</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q3: Success Validation Methods</strong><br>
-                                How should success be measured and validated?
+                            <div class="outstanding-question" data-question="validation-methods">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Success Validation Methods</strong>
+                                </div>
+                                How should performance be measured and validated?
                                 <ul>
-                                    <li>Real-time machine metrics + post-LaserWeedered field outcomes?</li>
-                                    <li>Customer self-reporting vs. Carbon verification?</li>
+                                    <li>Real-time machine metrics vs. post-field outcome validation</li>
+                                    <li>Customer self-reporting vs. Carbon verification</li>
+                                    <li>Acceptable deviation thresholds from target performance</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 2: Customer Experience & Configuration -->
+            <!-- Section 2: Configuration & Customer Experience -->
             <div class="accordion-item">
                 <button class="accordion-header">
-                    <span>2. Customer Experience & Configuration Management</span>
+                    <span>2. Configuration & Customer Experience</span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
                     <div class="accordion-body">
                         <div class="subsection">
-                            <h4>Configuration Complexity Challenges</h4>
+                            <h4>Current Configuration Complexity</h4>
                             
                             <div class="current-state">
-                                <strong>Current State Assessment:</strong><br>
-                                Based on the current system, the LaserWeeder has numerous configs:
+                                <strong>✅ Current System Capabilities:</strong><br>
+                                The LaserWeeder has numerous configuration parameters:
                                 <ul>
                                     <li>DeepWeed model thresholds and WPT vs. CPT confidence levels</li>
-                                    <li>P2P health and performance accuracy</li>
+                                    <li>P2P health and performance accuracy settings</li>
                                     <li>Scanner health and settle times</li>
-                                    <li>Laser firing profiles based on settings and supporting field conditions</li>
+                                    <li>Laser firing profiles based on field conditions</li>
                                 </ul>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q4: Configuration Simplification</strong><br>
+                            <div class="outstanding-question" data-question="configuration-simplification">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Configuration Simplification Strategy</strong>
+                                </div>
+                                How complex should configuration be for customers?
                                 <ul>
-                                    <li>How hard should it be for customers (farm manager role) to achieve optimal settings?</li>
-                                    <li>What parts of the system be "plug-and-play" with minimal configuration?</li>
-                                    <li>What level of technical expertise should we assume from customers?</li>
+                                    <li>What should be "plug-and-play" vs. customer-configurable?</li>
+                                    <li>What technical expertise level should we assume?</li>
+                                    <li>How quickly should customers reach optimal settings?</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q5: Configuration Feedback Mechanisms</strong><br>
+                            <div class="outstanding-question" data-question="feedback-mechanisms">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Performance Feedback & Guidance</strong>
+                                </div>
+                                How do customers know when settings need adjustment?
                                 <ul>
-                                    <li>How does a customer know their settings are fucked?</li>
-                                    <li>Should the system provide real-time performance scoring?</li>
-                                    <li>What early warning indicators should trigger configuration review by Carbon?</li>
+                                    <li>Real-time performance scoring and alerts</li>
+                                    <li>Early warning indicators for Carbon intervention</li>
+                                    <li>Guidance tools for optimization</li>
                                 </ul>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h4>Entry Timing & Job Planning (Phase 3 optimization)</h4>
-                            
-                            <div class="current-state">
-                                <strong>Current Technical Capability:</strong><br>
-                                The system provides comprehensive real-time monitoring through Prometheus/Grafana with:
-                                <ul>
-                                    <li>Deepweed metrics</li>
-                                    <li>Aimbot metrics</li>
-                                    <li>Overall machine states</li>
-                                </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q7: Planning Tool Development</strong><br>
+                            <div class="outstanding-question" data-question="planning-tools">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Job Planning & Prediction Tools</strong>
+                                </div>
+                                What planning capabilities should we provide?
                                 <ul>
-                                    <li>How do we expose entry timing evaluations to customers for field planning and coverage visualization?</li>
-                                    <li>Should we provide simulated job performance predictions?</li>
+                                    <li>Entry timing evaluations for field planning</li>
+                                    <li>Job performance predictions and confidence levels</li>
+                                    <li>Coverage visualization and optimization</li>
                                 </ul>
-                            </div>
-
-                            <div class="question-item">
-                                <strong>Q8: Performance Prediction Accuracy</strong><br>
-                                <ul>
-                                    <li>How accurate should our job simulation capabilities be?</li>
-                                    <li>What confidence levels are acceptable for planning purposes?</li>
-                                    <li>How do we validate prediction accuracy against actual field results?</li>
-                                </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 3: Performance Monitoring -->
+            <!-- Section 3: Monitoring & Proactive Intervention -->
             <div class="accordion-item">
                 <button class="accordion-header">
-                    <span>3. Performance Monitoring & Intervention</span>
+                    <span>3. Monitoring & Proactive Intervention</span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
                     <div class="accordion-body">
                         <div class="subsection">
-                            <h4>Real-time Performance Assessment</h4>
+                            <h4>Current Monitoring Infrastructure</h4>
                             
                             <div class="current-state">
-                                <strong>Current Monitoring Capabilities:</strong><br>
+                                <strong>✅ Real-time Monitoring Capabilities:</strong><br>
+                                Comprehensive monitoring through Prometheus/Grafana:
                                 <ul>
-                                    <li><strong>Laser/Scanner Performance:</strong> Utilization %, overhead times, error rates</li>
-                                    <li><strong>Computer Vision:</strong> Deepweed detection accuracy, model overall confidence for plants in a specific field, p2p accuracy (variable conditions, e.g., windy, thinning kiss of death, etc.)</li>
-                                    <li><strong>Mechanical Systems:</strong> Scanner accuracy, positioning errors, speculative enabled, camera health</li>
+                                    <li><strong>Laser/Scanner:</strong> Utilization %, overhead times, error rates</li>
+                                    <li><strong>Computer Vision:</strong> DeepWeed accuracy, model confidence, P2P accuracy</li>
+                                    <li><strong>Mechanical:</strong> Scanner accuracy, positioning errors, camera health</li>
+                                    <li><strong>Remote Alerting:</strong> Semi-reliable alarms and custom dashboards</li>
                                 </ul>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q9: Performance Deviation Detection</strong><br>
+                            <div class="outstanding-question" data-question="intervention-strategy">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Proactive Intervention Strategy</strong>
+                                </div>
+                                When and how should Carbon intervene proactively?
                                 <ul>
-                                    <li>How close to customer's desired outcome did the machine actually perform?</li>
-                                    <li>What constitutes an "acceptable" deviation from target performance?</li>
-                                    <li>Should performance thresholds be customer-specific or industry-standard?</li>
+                                    <li>Performance deviation triggers for automatic alerts</li>
+                                    <li>Escalation procedures: automatic vs. recommended vs. manual</li>
+                                    <li>Balance between customer autonomy and proactive support</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q10: Performance Monitoring Granularity</strong><br>
+                            <div class="outstanding-question" data-question="monitoring-granularity">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Monitoring Scope & Timing</strong>
+                                </div>
+                                How should fleet-wide performance monitoring work?
                                 <ul>
-                                    <li>How does Carbon monitor variations in performance across the fleet?</li>
-                                    <li>Should monitoring be real-time, daily, weekly, or event-driven?</li>
-                                    <li>What performance metrics require immediate vs. trend-based analysis?</li>
+                                    <li>Real-time vs. daily vs. weekly vs. event-driven monitoring</li>
+                                    <li>Fleet-wide performance variation tracking</li>
+                                    <li>Immediate vs. trend-based analysis requirements</li>
                                 </ul>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h4>Proactive Intervention Strategy</h4>
-                            
-                            <div class="current-state">
-                                <strong>Current Alerting Infrastructure:</strong><br>
-                                <ul>
-                                    <li>Remote monitoring with semi trustable or accurate alarms</li>
-                                    <li>Custom Grafana dashboards for performance based visualization</li>
-                                </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q11: Intervention Triggers</strong><br>
+                            <div class="outstanding-question" data-question="response-model">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Support Response Framework</strong>
+                                </div>
+                                How should Carbon's support response work?
                                 <ul>
-                                    <li>What escalation measures should Carbon use to address issues before customer intervention?</li>
-                                    <li>Should interventions be automatic, recommended, or manual?</li>
-                                    <li>How do we balance customer autonomy with proactive support?</li>
+                                    <li>When to initiate contact vs. wait for customer issues</li>
+                                    <li>Performance degradation patterns requiring immediate action</li>
+                                    <li>Measuring intervention effectiveness</li>
                                 </ul>
-                            </div>
-
-                            <div class="question-item">
-                                <strong>Q12: Support Response Model</strong><br>
-                                <ul>
-                                    <li>When should Carbon initiate contact vs. waiting for customer issues?</li>
-                                    <li>What performance degradation patterns warrant immediate action?</li>
-                                    <li>How do we measure intervention effectiveness?</li>
-                                </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 4: Responsibility Matrix -->
+            <!-- Section 4: Responsibility & Ownership Framework -->
             <div class="accordion-item">
                 <button class="accordion-header">
-                    <span>4. Responsibility Matrix & Ownership Framework</span>
+                    <span>4. Responsibility & Ownership Framework</span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
                     <div class="accordion-body">
                         <div class="subsection">
-                            <h4>Shared vs. Sole Ownership Definition</h4>
+                            <h4>Ownership Boundaries</h4>
 
-                            <div class="question-item">
-                                <strong>Q13: Customer Sole Ownership</strong><br>
+                            <div class="outstanding-question" data-question="customer-ownership">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Customer Sole Responsibility</strong>
+                                </div>
                                 What should customers be fully responsible for?
                                 <ul>
-                                    <li>Field preparation and planning?</li>
-                                    <li>Basic maintenance and cleaning?</li>
-                                    <li>Initial configuration parameter selection?</li>
-                                    <li>Performance expectation setting?</li>
+                                    <li>Field preparation and planning</li>
+                                    <li>Basic maintenance and cleaning</li>
+                                    <li>Initial configuration parameter selection</li>
+                                    <li>Performance expectation setting</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q14: Carbon Sole Ownership</strong><br>
+                            <div class="outstanding-question" data-question="carbon-ownership">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Carbon Sole Responsibility</strong>
+                                </div>
                                 What should Carbon be fully responsible for?
                                 <ul>
-                                    <li>Software updates and bug fixes?</li>
-                                    <li>Hardware reliability and warranty?</li>
-                                    <li>Algorithm accuracy and model performance?</li>
-                                    <li>Technical support and troubleshooting for out of performance range expectations?</li>
+                                    <li>Software updates and bug fixes</li>
+                                    <li>Hardware reliability and warranty</li>
+                                    <li>Algorithm accuracy and model performance</li>
+                                    <li>Technical support for performance issues</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q15: Shared Ownership Framework</strong><br>
-                                What requires collaborative ownership?
+                            <div class="outstanding-question" data-question="shared-ownership">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Collaborative Ownership</strong>
+                                </div>
+                                What requires joint Carbon-Customer ownership?
                                 <ul>
-                                    <li>Performance optimization and tuning?</li>
-                                    <li>Field condition adaptation?</li>
-                                    <li>Success metric definition and measurement?</li>
-                                    <li>Training and knowledge transfer?</li>
+                                    <li>Performance optimization and tuning</li>
+                                    <li>Field condition adaptation</li>
+                                    <li>Success metric definition and measurement</li>
+                                    <li>Training and knowledge transfer</li>
                                 </ul>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h4>Accountability Boundaries</h4>
-
-                            <div class="question-item">
-                                <strong>Q16: Performance Accountability</strong><br>
-                                <ul>
-                                    <li>When performance falls short, how do we determine root cause ownership?</li>
-                                    <li>How formal SLAs between Carbon and customers?</li>
-                                    <li>How do we handle disputes over performance responsibility?</li>
-                                </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
 
-                            <div class="question-item">
-                                <strong>Q17: Continuous Improvement Responsibility</strong><br>
+                            <div class="outstanding-question" data-question="accountability">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Performance Accountability</strong>
+                                </div>
+                                How do we handle performance disputes and continuous improvement?
                                 <ul>
-                                    <li>Who drives ongoing performance optimization - Carbon or customer?</li>
-                                    <li>Should improvements be push-based (Carbon-driven) or pull-based (customer-requested)?</li>
-                                    <li>How do we prioritize improvement investments across the customer base?</li>
+                                    <li>Root cause ownership determination when performance falls short</li>
+                                    <li>SLA formalization between Carbon and customers</li>
+                                    <li>Continuous improvement prioritization across customer base</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -576,40 +652,45 @@
             <!-- Section 5: Technical Implementation -->
             <div class="accordion-item">
                 <button class="accordion-header">
-                    <span>5. Technical Implementation</span>
+                    <span>5. Technical Implementation & Team Structure</span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
                     <div class="accordion-body">
                         <div class="subsection">
-                            <h4>Current Capability Assessment</h4>
+                            <h4>Current vs. Required Capabilities</h4>
                             
                             <div class="current-state">
-                                <span class="ready-indicator ready-yes">✅ Ready for Implementation:</span>
+                                <strong>✅ Ready for Implementation:</strong>
                                 <ul>
                                     <li>Comprehensive sensor/system data with real-time collection</li>
-                                    <li>Grafana monitoring stack operational, but not fully verified</li>
+                                    <li>Grafana monitoring stack operational (needs verification)</li>
                                     <li>Ground truth validation framework established</li>
                                     <li>Multi-layered data architecture for performance correlation</li>
                                 </ul>
                             </div>
 
-                            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107;">
-                                <span class="ready-indicator ready-needs-dev">⚠️ Requires Development:</span>
+                            <div class="outstanding-question" data-question="development-priorities">
+                                <div class="question-header">
+                                    <span class="warning-icon">⚠️</span>
+                                    <strong>Development Priorities</strong>
+                                </div>
+                                What technical capabilities need development?
                                 <ul>
                                     <li>Automated performance scoring algorithms</li>
                                     <li>Customer-facing configuration management tools</li>
                                     <li>Predictive analytics for proactive intervention</li>
                                     <li>Standardized performance benchmarking framework</li>
                                 </ul>
+                                <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
                             </div>
                         </div>
 
                         <div class="subsection">
-                            <h4>AEP Team Structure Recommendation</h4>
+                            <h4>AEP Team Structure</h4>
                             
-                            <div style="background: #f1f3f4; padding: 20px; border-radius: 8px; margin: 15px 0;">
-                                <strong>Immediate Team Composition:</strong>
+                            <div class="phase-item">
+                                <strong>Recommended Team Composition:</strong>
                                 <ul>
                                     <li><strong>Performance Engineering Lead</strong> - Systems analysis and optimization</li>
                                     <li><strong>Customer Success Engineering</strong> - Configuration management and support</li>
@@ -623,7 +704,7 @@
                                 <div class="success-metric"><strong>Customer Performance Satisfaction:</strong> >95% meeting stated objectives</div>
                                 <div class="success-metric"><strong>Configuration Success Rate:</strong> <15min time-to-optimal-settings</div>
                                 <div class="success-metric"><strong>Proactive Issue Resolution:</strong> >80% issues resolved before customer impact</div>
-                                <div class="success-metric"><strong>Fleet Performance Optimization:</strong> Year-over-year improvement for customer specific cases and fleet wide performance</div>
+                                <div class="success-metric"><strong>Fleet Performance Optimization:</strong> Year-over-year improvement tracking</div>
                             </div>
                         </div>
                     </div>
@@ -633,7 +714,7 @@
             <!-- Section 6: Implementation Roadmap -->
             <div class="accordion-item">
                 <button class="accordion-header">
-                    <span>6. Implementation Roadmap</span>
+                    <span>6. Implementation Roadmap & Next Steps</span>
                     <span class="accordion-icon">▼</span>
                 </button>
                 <div class="accordion-content">
@@ -641,79 +722,38 @@
                         <div class="phase-item">
                             <h4>Phase 1: Foundation (30 days)</h4>
                             <ul>
-                                <li><strong>Team Alignment:</strong> Resolve initial questions</li>
-                                <li><strong>Baseline Metrics:</strong> Establish current performance capabilities and major factors</li>
-                                <li><strong>Customer Expectations:</strong> Define performance expectations by customer and machine type</li>
+                                <li><strong>Team Workshop:</strong> Resolve outstanding questions from this document</li>
+                                <li><strong>Baseline Assessment:</strong> Current performance capabilities and limitations</li>
+                                <li><strong>Customer Research:</strong> Validate performance expectations across customer segments</li>
                             </ul>
                         </div>
 
                         <div class="phase-item">
-                            <h4>Phase 2: Prototype Framework Development (60 days)</h4>
+                            <h4>Phase 2: Framework Development (60 days)</h4>
                             <ul>
-                                <li><strong>Performance Scoring System:</strong> Automated assessment algorithms</li>
-                                <li><strong>Configuration Management:</strong> Customer-facing optimization tools</li>
+                                <li><strong>Performance Scoring:</strong> Automated assessment algorithms</li>
+                                <li><strong>Configuration Tools:</strong> Customer-facing optimization interfaces</li>
                                 <li><strong>Intervention Protocols:</strong> Escalation procedures and automation</li>
                             </ul>
                         </div>
 
                         <div class="phase-item">
-                            <h4>Phase 3: Optimization (60-180 days)</h4>
+                            <h4>Phase 3: Optimization & Scale (60-180 days)</h4>
                             <ul>
-                                <li><strong>Predictive Analytics:</strong> Key metrics for performance prediction</li>
-                                <li><strong>Continuous Improvement:</strong> Optimization recommendations and scheduling</li>
-                                <li><strong>Fleet Leverage:</strong> Multi customer performance insights</li>
+                                <li><strong>Predictive Analytics:</strong> Performance prediction capabilities</li>
+                                <li><strong>Continuous Improvement:</strong> Fleet-wide optimization insights</li>
+                                <li><strong>Customer Autonomy:</strong> Self-service performance management</li>
                             </ul>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Section 7: Success Criteria -->
-            <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>7. Success Criteria</span>
-                    <span class="accordion-icon">▼</span>
-                </button>
-                <div class="accordion-content">
-                    <div class="accordion-body">
-                        <p>The AEP team will be considered successful when:</p>
-                        <ol>
-                            <li><strong>Performance Predictability:</strong> Customers can reliably predict and achieve desired outcomes</li>
-                            <li><strong>Configuration Simplicity:</strong> Time-to-optimal-performance is minimized and measurable</li>
-                            <li><strong>Proactive Support:</strong> Issues are identified and resolved before customer impact</li>
-                            <li><strong>Continuous Improvement:</strong> Performance metrics improve year-over-year across the fleet</li>
-                            <li><strong>Customer Autonomy:</strong> Customers achieve sustained success with minimal Carbon intervention</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 8: Next Steps -->
-            <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>8. Next Steps</span>
-                    <span class="accordion-icon">▼</span>
-                </button>
-                <div class="accordion-content">
-                    <div class="accordion-body">
-                        <div class="next-steps">
-                            <h4>Immediate Actions Required:</h4>
+                        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 5px solid #ffc107;">
+                            <h4>⚠️ Immediate Actions Required:</h4>
                             <ol>
-                                <li><strong>Team Workshop:</strong> Schedule session to review foundational questions</li>
-                                <li><strong>Customer Investigation:</strong> Validate performance expectations with carbon team and customer use cases</li>
-                                <li><strong>Technical Deep Dive:</strong> Map current monitoring capabilities to required performance metrics with confidence values</li>
-                                <li><strong>Pilot Program Design:</strong> Select test customers for initial performance framework validation</li>
+                                <li><strong>Team Workshop:</strong> Schedule session to address outstanding questions</li>
+                                <li><strong>Customer Investigation:</strong> Interview customers about performance expectations</li>
+                                <li><strong>Technical Deep Dive:</strong> Map monitoring capabilities to required metrics</li>
+                                <li><strong>Pilot Selection:</strong> Choose test customers for framework validation</li>
                             </ol>
-                        </div>
-
-                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                            <h4>Decision Points:</h4>
-                            <ul>
-                                <li>Customer vs. Carbon ownership of performance definitions</li>
-                                <li>Intervention strategy: reactive vs. proactive support model</li>
-                                <li>Configuration management: manual to guided to automated</li>
-                                <li>Performance measurement: real-time vs. outcome based validation</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -724,43 +764,123 @@
     <button class="scroll-top" onclick="scrollToTop()">↑</button>
 
     <script>
-        // Accordion functionality
-        const accordionHeaders = document.querySelectorAll('.accordion-header');
-        
-        accordionHeaders.forEach(header => {
-            header.addEventListener('click', () => {
-                const content = header.nextElementSibling;
-                const isActive = header.classList.contains('active');
-                
-                // Close all other accordions
-                accordionHeaders.forEach(otherHeader => {
-                    if (otherHeader !== header) {
-                        otherHeader.classList.remove('active');
-                        otherHeader.nextElementSibling.classList.remove('active');
+        let editMode = false;
+
+        // Improved accordion functionality with scroll position preservation
+        function initializeAccordion() {
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Store current scroll position relative to the header
+                    const headerTop = header.getBoundingClientRect().top + window.pageYOffset;
+                    const currentScrollOffset = window.pageYOffset - headerTop;
+                    
+                    const content = header.nextElementSibling;
+                    const isActive = header.classList.contains('active');
+                    
+                    // Close all other accordions
+                    accordionHeaders.forEach(otherHeader => {
+                        if (otherHeader !== header) {
+                            otherHeader.classList.remove('active');
+                            otherHeader.nextElementSibling.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current accordion
+                    if (isActive) {
+                        header.classList.remove('active');
+                        content.classList.remove('active');
+                    } else {
+                        header.classList.add('active');
+                        content.classList.add('active');
+                        
+                        // Maintain scroll position at the header after expansion
+                        setTimeout(() => {
+                            const newHeaderTop = header.getBoundingClientRect().top + window.pageYOffset;
+                            window.scrollTo({
+                                top: newHeaderTop,
+                                behavior: 'smooth'
+                            });
+                        }, 50); // Small delay to allow content to expand
                     }
                 });
-                
-                // Toggle current accordion
-                if (isActive) {
-                    header.classList.remove('active');
-                    content.classList.remove('active');
-                } else {
-                    header.classList.add('active');
-                    content.classList.add('active');
+            });
+        }
+
+        // Edit mode functionality
+        function toggleEditMode() {
+            editMode = !editMode;
+            const body = document.body;
+            const toggleBtn = document.querySelector('.edit-toggle');
+            const saveBtn = document.querySelector('.save-btn');
+            
+            if (editMode) {
+                body.classList.add('edit-mode');
+                toggleBtn.textContent = '👁️ View Mode';
+                toggleBtn.classList.add('active');
+                saveBtn.style.display = 'inline-block';
+                loadSavedAnswers();
+            } else {
+                body.classList.remove('edit-mode');
+                toggleBtn.textContent = '📝 Enable Interactive Mode';
+                toggleBtn.classList.remove('active');
+                saveBtn.style.display = 'none';
+            }
+        }
+
+        function saveAnswers() {
+            const answers = {};
+            document.querySelectorAll('[data-question]').forEach(questionEl => {
+                const questionId = questionEl.getAttribute('data-question');
+                const textarea = questionEl.querySelector('.answer-input');
+                if (textarea && textarea.value.trim()) {
+                    answers[questionId] = textarea.value.trim();
+                    questionEl.classList.add('answered');
                 }
             });
-        });
+            localStorage.setItem('aep-answers', JSON.stringify(answers));
+            
+            // Show save confirmation
+            const saveBtn = document.querySelector('.save-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = '✓ Saved!';
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+            }, 2000);
+        }
+
+        function loadSavedAnswers() {
+            const saved = localStorage.getItem('aep-answers');
+            if (saved) {
+                const answers = JSON.parse(saved);
+                Object.entries(answers).forEach(([questionId, answer]) => {
+                    const questionEl = document.querySelector(`[data-question="${questionId}"]`);
+                    if (questionEl) {
+                        const textarea = questionEl.querySelector('.answer-input');
+                        if (textarea) {
+                            textarea.value = answer;
+                            questionEl.classList.add('answered');
+                        }
+                    }
+                });
+            }
+        }
 
         // Scroll to top functionality
-        const scrollTopBtn = document.querySelector('.scroll-top');
-        
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                scrollTopBtn.classList.add('visible');
-            } else {
-                scrollTopBtn.classList.remove('visible');
-            }
-        });
+        function initializeScrollTop() {
+            const scrollTopBtn = document.querySelector('.scroll-top');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+        }
 
         function scrollToTop() {
             window.scrollTo({
@@ -769,9 +889,13 @@
             });
         }
 
-        // Auto-expand first section on load
+        // Initialize everything when page loads
         window.addEventListener('load', () => {
-            const firstHeader = accordionHeaders[0];
+            initializeAccordion();
+            initializeScrollTop();
+            
+            // Auto-expand first section
+            const firstHeader = document.querySelector('.accordion-header');
             const firstContent = firstHeader.nextElementSibling;
             firstHeader.classList.add('active');
             firstContent.classList.add('active');
