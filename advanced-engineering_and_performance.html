@@ -91,6 +91,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .controls-left {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .controls-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .edit-toggle {
@@ -112,7 +126,7 @@
             background: #28a745;
         }
 
-        .save-btn {
+        .save-btn, .export-btn, .import-btn {
             background: #28a745;
             color: white;
             border: none;
@@ -120,12 +134,15 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
-            margin-left: 10px;
             display: none;
         }
 
-        .save-btn:hover {
+        .save-btn:hover, .export-btn:hover, .import-btn:hover {
             background: #218838;
+        }
+
+        .import-file {
+            display: none;
         }
 
         .executive-summary {
@@ -253,7 +270,7 @@
             padding-bottom: 5px;
         }
 
-        /* Consistent Outstanding Question Styling */
+        /* Outstanding Question Styling with states */
         .outstanding-question {
             background: rgba(220, 53, 69, 0.1);
             padding: 15px;
@@ -264,7 +281,12 @@
             transition: all 0.3s ease;
         }
 
-        .outstanding-question.answered {
+        .outstanding-question.draft {
+            background: rgba(253, 126, 20, 0.1);
+            border-left-color: var(--color-progress-orange);
+        }
+
+        .outstanding-question.final {
             background: rgba(40, 167, 69, 0.1);
             border-left-color: var(--color-progress-green);
         }
@@ -281,7 +303,11 @@
             font-size: 1.1em;
         }
 
-        .outstanding-question.answered .warning-icon {
+        .outstanding-question.draft .warning-icon {
+            color: var(--color-progress-orange);
+        }
+
+        .outstanding-question.final .warning-icon {
             color: var(--color-progress-green);
         }
 
@@ -346,6 +372,68 @@
             display: block;
         }
 
+        /* Draft/Final Toggle */
+        .answer-status {
+            display: none;
+            margin-top: 10px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .edit-mode .answer-status {
+            display: flex;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--color-progress-orange);
+            transition: .4s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--color-progress-green);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(32px);
+        }
+
+        .toggle-label {
+            color: var(--color-text-secondary);
+            font-size: 0.9em;
+        }
+
         ul, ol {
             padding-left: 25px;
             margin: 15px 0;
@@ -393,6 +481,32 @@
             background: rgba(255,255,255,0.1);
         }
 
+        /* Progress Summary */
+        .progress-summary {
+            background: var(--color-bg-surface);
+            padding: 20px;
+            margin: 20px 40px;
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+            display: none;
+        }
+
+        .edit-mode .progress-summary {
+            display: block;
+        }
+
+        .progress-summary h3 {
+            color: var(--color-text-primary);
+            margin-bottom: 15px;
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            color: var(--color-text-secondary);
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -422,8 +536,11 @@
 
             .controls {
                 padding: 15px 20px;
-                flex-direction: column;
-                gap: 10px;
+            }
+
+            .controls-left, .controls-right {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -435,18 +552,47 @@
             <div class="subtitle">Carbon Robotics LaserWeeder Platform</div>
             <div class="meta">
                 <div>Document Version: 2.0</div>
-                <div>Date: 2025-01-09</div>
+                <div>Date: 2025-07-01</div>
                 <div>Status: Streamlined for Team Discussion</div>
             </div>
         </div>
 
         <div class="controls">
-            <div>
+            <div class="controls-left">
                 <button class="edit-toggle" onclick="toggleEditMode()">📝 Enable Interactive Mode</button>
                 <button class="save-btn" onclick="saveAnswers()">💾 Save Answers</button>
             </div>
-            <div style="font-size: 0.9em; color: var(--color-text-secondary);">
-                ⚠️ = Outstanding Questions • ✅ = Current Capabilities
+            <div class="controls-right">
+                <button class="export-btn" onclick="exportAnswers()">📥 Export</button>
+                <button class="import-btn" onclick="document.getElementById('import-file').click()">📤 Import</button>
+                <input type="file" id="import-file" class="import-file" accept=".json" onchange="importAnswers(event)">
+            </div>
+            <div style="width: 100%; text-align: center; font-size: 0.9em; color: var(--color-text-secondary); margin-top: 10px;">
+                ⚠️ = Unanswered • 📝 = Draft • ✅ = Final
+            </div>
+        </div>
+
+        <div class="progress-summary">
+            <h3>Overall Progress Summary</h3>
+            <div class="progress-item">
+                <span>Total Questions:</span>
+                <span id="total-questions">0</span>
+            </div>
+            <div class="progress-item">
+                <span>Unanswered:</span>
+                <span id="unanswered-count">0</span>
+            </div>
+            <div class="progress-item">
+                <span>Draft Answers:</span>
+                <span id="draft-count">0</span>
+            </div>
+            <div class="progress-item">
+                <span>Final Answers:</span>
+                <span id="final-count">0</span>
+            </div>
+            <div class="progress-item" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--color-border);">
+                <span><strong>Overall Completion:</strong></span>
+                <span><strong id="overall-completion">0%</strong></span>
             </div>
         </div>
 
@@ -484,6 +630,14 @@
                                     <li>Field coverage efficiency (acres/hour based on conditions)</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="performance-ownership">
@@ -498,6 +652,14 @@
                                     <li>How do we handle conflicting expectations pre/post sale?</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="validation-methods">
@@ -512,6 +674,14 @@
                                     <li>Acceptable deviation thresholds from target performance</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -553,6 +723,14 @@
                                     <li>How quickly should customers reach optimal settings?</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="feedback-mechanisms">
@@ -567,6 +745,14 @@
                                     <li>Guidance tools for optimization</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="planning-tools">
@@ -581,6 +767,14 @@
                                     <li>Coverage visualization and optimization</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -622,6 +816,14 @@
                                     <li>Balance between customer autonomy and proactive support</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="monitoring-granularity">
@@ -636,6 +838,14 @@
                                     <li>Immediate vs. trend-based analysis requirements</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="response-model">
@@ -650,6 +860,14 @@
                                     <li>Measuring intervention effectiveness</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -681,6 +899,14 @@
                                     <li>Performance expectation setting</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="carbon-ownership">
@@ -696,6 +922,14 @@
                                     <li>Technical support for performance issues</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="shared-ownership">
@@ -711,6 +945,14 @@
                                     <li>Training and knowledge transfer</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
 
                             <div class="outstanding-question" data-question="accountability">
@@ -725,6 +967,14 @@
                                     <li>Continuous improvement prioritization across customer base</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -766,6 +1016,14 @@
                                     <li>Standardized performance benchmarking framework</li>
                                 </ul>
                                 <textarea class="answer-input" placeholder="Enter discussion notes and decisions..."></textarea>
+                                <div class="answer-status">
+                                    <span class="toggle-label">Draft</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" class="status-toggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">Final</span>
+                                </div>
                             </div>
                         </div>
 
@@ -808,7 +1066,7 @@
                             <ul>
                                 <li><strong>Team Workshop:</strong> Resolve outstanding questions from this document</li>
                                 <li><strong>Baseline Assessment:</strong> Current performance capabilities and limitations</li>
-                                <li><strong>Customer Research:</strong> Validate performance expectations across customer segments</li>
+                                <li><strong>Customer Research:</strong> Validate performance expectations using known blueprint for success across various customers</li>
                             </ul>
                         </div>
 
@@ -850,14 +1108,36 @@
     <script>
         let editMode = false;
 
-        // Initialize completion tracking
+        // Initialize completion tracking with weighted calculation
         function updateCompletionStatus() {
+            let totalQuestions = 0;
+            let unansweredCount = 0;
+            let draftCount = 0;
+            let finalCount = 0;
+            let overallScore = 0;
+
             document.querySelectorAll('.accordion-header').forEach(header => {
                 const section = header.parentElement;
                 const questions = section.querySelectorAll('.outstanding-question');
-                const answered = section.querySelectorAll('.outstanding-question.answered');
+                let sectionScore = 0;
                 
-                const percentage = questions.length > 0 ? Math.round((answered.length / questions.length) * 100) : 0;
+                questions.forEach(question => {
+                    totalQuestions++;
+                    
+                    if (question.classList.contains('final')) {
+                        finalCount++;
+                        sectionScore += 1;
+                        overallScore += 1;
+                    } else if (question.classList.contains('draft')) {
+                        draftCount++;
+                        sectionScore += 0.5;
+                        overallScore += 0.5;
+                    } else {
+                        unansweredCount++;
+                    }
+                });
+                
+                const percentage = questions.length > 0 ? Math.round((sectionScore / questions.length) * 100) : 0;
                 
                 // Update badge text
                 const badge = header.querySelector('.completion-badge');
@@ -885,9 +1165,18 @@
                     }
                 }
             });
+
+            // Update summary counts
+            document.getElementById('total-questions').textContent = totalQuestions;
+            document.getElementById('unanswered-count').textContent = unansweredCount;
+            document.getElementById('draft-count').textContent = draftCount;
+            document.getElementById('final-count').textContent = finalCount;
+            
+            const overallPercentage = totalQuestions > 0 ? Math.round((overallScore / totalQuestions) * 100) : 0;
+            document.getElementById('overall-completion').textContent = `${overallPercentage}%`;
         }
 
-        // Improved accordion functionality with scroll position preservation
+        // Accordion functionality - allows multiple open
         function initializeAccordion() {
             const accordionHeaders = document.querySelectorAll('.accordion-header');
             
@@ -898,35 +1187,13 @@
                     const content = header.nextElementSibling;
                     const isActive = header.classList.contains('active');
                     
-                    // Store the header position before toggling
-                    const headerRect = header.getBoundingClientRect();
-                    const headerTop = window.pageYOffset + headerRect.top;
-                    
-                    // Close all other accordions
-                    accordionHeaders.forEach(otherHeader => {
-                        if (otherHeader !== header) {
-                            otherHeader.classList.remove('active');
-                            otherHeader.nextElementSibling.classList.remove('active');
-                        }
-                    });
-                    
-                    // Toggle current accordion
+                    // Simply toggle the current accordion
                     if (isActive) {
                         header.classList.remove('active');
                         content.classList.remove('active');
                     } else {
                         header.classList.add('active');
                         content.classList.add('active');
-                        
-                        // After a brief delay to allow for content expansion,
-                        // ensure the header is visible at the top of the viewport
-                        setTimeout(() => {
-                            const offset = 20; // Small offset from top
-                            window.scrollTo({
-                                top: headerTop - offset,
-                                behavior: 'smooth'
-                            });
-                        }, 10);
                     }
                 });
             });
@@ -938,18 +1205,25 @@
             const body = document.body;
             const toggleBtn = document.querySelector('.edit-toggle');
             const saveBtn = document.querySelector('.save-btn');
+            const exportBtn = document.querySelector('.export-btn');
+            const importBtn = document.querySelector('.import-btn');
             
             if (editMode) {
                 body.classList.add('edit-mode');
                 toggleBtn.textContent = '👁️ View Mode';
                 toggleBtn.classList.add('active');
                 saveBtn.style.display = 'inline-block';
+                exportBtn.style.display = 'inline-block';
+                importBtn.style.display = 'inline-block';
                 loadSavedAnswers();
+                initializeAutoSave();
             } else {
                 body.classList.remove('edit-mode');
                 toggleBtn.textContent = '📝 Enable Interactive Mode';
                 toggleBtn.classList.remove('active');
                 saveBtn.style.display = 'none';
+                exportBtn.style.display = 'none';
+                importBtn.style.display = 'none';
             }
         }
 
@@ -958,24 +1232,34 @@
             document.querySelectorAll('[data-question]').forEach(questionEl => {
                 const questionId = questionEl.getAttribute('data-question');
                 const textarea = questionEl.querySelector('.answer-input');
+                const statusToggle = questionEl.querySelector('.status-toggle');
+                
                 if (textarea && textarea.value.trim()) {
-                    answers[questionId] = textarea.value.trim();
-                    questionEl.classList.add('answered');
+                    const isFinal = statusToggle.checked;
+                    answers[questionId] = {
+                        text: textarea.value.trim(),
+                        status: isFinal ? 'final' : 'draft'
+                    };
                     
-                    // Update warning icon to check mark
+                    // Update classes and icon
+                    questionEl.classList.remove('draft', 'final');
+                    questionEl.classList.add(isFinal ? 'final' : 'draft');
+                    
                     const icon = questionEl.querySelector('.warning-icon');
                     if (icon) {
-                        icon.textContent = '✅';
+                        icon.textContent = isFinal ? '✅' : '📝';
                     }
                 } else {
-                    questionEl.classList.remove('answered');
+                    // Remove classes if no answer
+                    questionEl.classList.remove('draft', 'final');
                     const icon = questionEl.querySelector('.warning-icon');
                     if (icon) {
                         icon.textContent = '⚠️';
                     }
                 }
             });
-            localStorage.setItem('aep-answers', JSON.stringify(answers));
+            
+            localStorage.setItem('aep-answers-v2', JSON.stringify(answers));
             
             // Update completion status
             updateCompletionStatus();
@@ -990,21 +1274,29 @@
         }
 
         function loadSavedAnswers() {
-            const saved = localStorage.getItem('aep-answers');
+            const saved = localStorage.getItem('aep-answers-v2');
             if (saved) {
                 const answers = JSON.parse(saved);
-                Object.entries(answers).forEach(([questionId, answer]) => {
+                Object.entries(answers).forEach(([questionId, answerData]) => {
                     const questionEl = document.querySelector(`[data-question="${questionId}"]`);
                     if (questionEl) {
                         const textarea = questionEl.querySelector('.answer-input');
-                        if (textarea) {
-                            textarea.value = answer;
-                            questionEl.classList.add('answered');
+                        const statusToggle = questionEl.querySelector('.status-toggle');
+                        
+                        if (textarea && answerData.text) {
+                            textarea.value = answerData.text;
                             
-                            // Update warning icon to check mark
+                            if (statusToggle) {
+                                statusToggle.checked = answerData.status === 'final';
+                            }
+                            
+                            // Update classes and icon
+                            questionEl.classList.remove('draft', 'final');
+                            questionEl.classList.add(answerData.status);
+                            
                             const icon = questionEl.querySelector('.warning-icon');
                             if (icon) {
-                                icon.textContent = '✅';
+                                icon.textContent = answerData.status === 'final' ? '✅' : '📝';
                             }
                         }
                     }
@@ -1013,6 +1305,59 @@
                 // Update completion status after loading
                 updateCompletionStatus();
             }
+        }
+
+        // Export/Import functionality
+        function exportAnswers() {
+            const saved = localStorage.getItem('aep-answers-v2');
+            if (!saved) {
+                alert('No answers to export');
+                return;
+            }
+            
+            const data = {
+                version: '2.0',
+                exportDate: new Date().toISOString(),
+                documentTitle: 'Advanced Engineering & Performance Team Scope',
+                answers: JSON.parse(saved)
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `aep-answers-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importAnswers(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (!data.answers || !data.version) {
+                        alert('Invalid file format');
+                        return;
+                    }
+                    
+                    if (confirm('This will overwrite your current answers. Continue?')) {
+                        localStorage.setItem('aep-answers-v2', JSON.stringify(data.answers));
+                        loadSavedAnswers();
+                        alert('Answers imported successfully!');
+                    }
+                } catch (error) {
+                    alert('Error reading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Clear the input for future imports
+            event.target.value = '';
         }
 
         // Scroll to top functionality
@@ -1040,12 +1385,24 @@
             if (!editMode) return;
             
             let saveTimeout;
+            
+            // Add listeners to textareas
             document.querySelectorAll('.answer-input').forEach(textarea => {
                 textarea.addEventListener('input', () => {
                     clearTimeout(saveTimeout);
                     saveTimeout = setTimeout(() => {
                         saveAnswers();
-                    }, 2000); // Auto-save after 2 seconds of inactivity
+                    }, 2000);
+                });
+            });
+            
+            // Add listeners to toggle switches
+            document.querySelectorAll('.status-toggle').forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => {
+                        saveAnswers();
+                    }, 500);
                 });
             });
         }
@@ -1056,13 +1413,7 @@
             initializeScrollTop();
             updateCompletionStatus();
             
-            // Auto-expand first section
-            const firstHeader = document.querySelector('.accordion-header');
-            if (firstHeader) {
-                const firstContent = firstHeader.nextElementSibling;
-                firstHeader.classList.add('active');
-                firstContent.classList.add('active');
-            }
+            // All accordions start closed (no auto-expand)
         });
     </script>
 </body>
