@@ -28,3 +28,9 @@ npm-debug.log*
 # Backup files
 *.bak
 *.backup
+
+# Supabase configuration
+supabaseClient.js
+
+# OAuth client secrets
+client_secret_*.json

@@ -544,6 +544,8 @@
             }
         }
     </style>
+    <script type="module" src="supabaseClient.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -1105,7 +1107,9 @@
 
     <button class="scroll-top" onclick="scrollToTop()">↑</button>
 
-    <script>
+    <script type="module">
+        import { supabase } from './supabaseClient.js';
+        
         let editMode = false;
 
         // Initialize completion tracking with weighted calculation
@@ -1308,35 +1312,53 @@
         }
 
         // Export/Import functionality
-        function exportAnswers() {
-            const saved = localStorage.getItem('aep-answers-v2');
-            if (!saved) {
-                alert('No answers to export');
-                return;
+        async function exportAnswers() {
+            try {
+                const { data: rows, error } = await supabase.from('answers').select();
+                if (error) throw error;
+                
+                if (!rows || rows.length === 0) {
+                    alert('No answers to export');
+                    return;
+                }
+                
+                // Convert to original format for compatibility
+                const answers = {};
+                rows.forEach(row => {
+                    if (row.text) {
+                        answers[row.id] = {
+                            text: row.text,
+                            status: row.status
+                        };
+                    }
+                });
+                
+                const data = {
+                    version: '2.0',
+                    exportDate: new Date().toISOString(),
+                    documentTitle: 'Advanced Engineering & Performance Team Scope',
+                    answers: answers
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `aep-answers-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export answers. Please try again.');
             }
-            
-            const data = {
-                version: '2.0',
-                exportDate: new Date().toISOString(),
-                documentTitle: 'Advanced Engineering & Performance Team Scope',
-                answers: JSON.parse(saved)
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `aep-answers-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
         }
 
-        function importAnswers(event) {
+        async function importAnswers(event) {
             const file = event.target.files[0];
             if (!file) return;
             
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
                     
@@ -1346,12 +1368,25 @@
                     }
                     
                     if (confirm('This will overwrite your current answers. Continue?')) {
-                        localStorage.setItem('aep-answers-v2', JSON.stringify(data.answers));
-                        loadSavedAnswers();
+                        // Convert old format to new format
+                        const updates = Object.entries(data.answers).map(([id, answerData]) => ({
+                            id,
+                            text: answerData.text || '',
+                            status: answerData.status || 'draft',
+                            updated_at: new Date().toISOString()
+                        }));
+                        
+                        // Batch upsert
+                        const { error } = await supabase.from('answers').upsert(updates);
+                        if (error) throw error;
+                        
                         alert('Answers imported successfully!');
+                        // Reload to show imported data
+                        location.reload();
                     }
                 } catch (error) {
-                    alert('Error reading file: ' + error.message);
+                    alert('Error importing file: ' + error.message);
+                    console.error('Import error:', error);
                 }
             };
             reader.readAsText(file);
@@ -1407,14 +1442,178 @@
             });
         }
 
+        /* ---------- Supabase Integration ---------- */
+        
+        // Save helper with debounce
+        const save = _.debounce(async (id, text, status) => {
+            try {
+                await supabase.from('answers').upsert({ 
+                    id, 
+                    text, 
+                    status,
+                    updated_at: new Date().toISOString()
+                });
+                
+                // Show save confirmation
+                const saveBtn = document.querySelector('.save-btn');
+                if (saveBtn) {
+                    const originalText = saveBtn.textContent;
+                    saveBtn.textContent = '✓ Saved!';
+                    setTimeout(() => {
+                        saveBtn.textContent = originalText;
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                alert('Failed to save. Please check your connection.');
+            }
+        }, 500);
+        
+        // Initialize auth and load data
+        async function initializeSupabase() {
+            try {
+                // Check session
+                let { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    await supabase.auth.signInWithOAuth({ 
+                        provider: 'google', 
+                        options: { redirectTo: location.href } 
+                    });
+                    return; // Will redirect
+                }
+                
+                // Load initial data
+                const { data: rows, error } = await supabase.from('answers').select();
+                if (error) throw error;
+                
+                rows?.forEach(r => {
+                    const q = document.querySelector(`[data-question="${r.id}"]`);
+                    if (!q) return;
+                    const ta = q.querySelector('.answer-input');
+                    const toggle = q.querySelector('.status-toggle');
+                    
+                    if (ta) ta.value = r.text || '';
+                    
+                    // Update status and styling
+                    q.classList.remove('draft', 'final');
+                    if (r.status === 'draft') {
+                        q.classList.add('draft');
+                        if (toggle) toggle.checked = false;
+                        const icon = q.querySelector('.warning-icon');
+                        if (icon) icon.textContent = '📝';
+                    } else if (r.status === 'final') {
+                        q.classList.add('final');
+                        if (toggle) toggle.checked = true;
+                        const icon = q.querySelector('.warning-icon');
+                        if (icon) icon.textContent = '✅';
+                    }
+                });
+                
+                updateCompletionStatus();
+                
+                // Subscribe to realtime updates
+                supabase.channel('answers')
+                    .on('postgres_changes', 
+                        { event: '*', schema: 'public', table: 'answers' },
+                        ({ new: r }) => {
+                            const q = document.querySelector(`[data-question="${r.id}"]`);
+                            if (!q) return;
+                            const ta = q.querySelector('.answer-input');
+                            if (ta && ta.value !== r.text) {
+                                ta.value = r.text || '';
+                                
+                                // Update visual state
+                                const toggle = q.querySelector('.status-toggle');
+                                q.classList.remove('draft', 'final');
+                                if (r.status === 'draft') {
+                                    q.classList.add('draft');
+                                    if (toggle) toggle.checked = false;
+                                    const icon = q.querySelector('.warning-icon');
+                                    if (icon) icon.textContent = '📝';
+                                } else if (r.status === 'final') {
+                                    q.classList.add('final');
+                                    if (toggle) toggle.checked = true;
+                                    const icon = q.querySelector('.warning-icon');
+                                    if (icon) icon.textContent = '✅';
+                                }
+                                
+                                updateCompletionStatus();
+                            }
+                        }
+                    )
+                    .subscribe();
+                    
+                // Hook up event listeners for saving
+                document.querySelectorAll('.outstanding-question').forEach(q => {
+                    const id = q.dataset.question;
+                    const ta = q.querySelector('.answer-input');
+                    const toggle = q.querySelector('.status-toggle');
+                    
+                    if (ta) {
+                        ta.addEventListener('input', () => {
+                            const status = toggle?.checked ? 'final' : 'draft';
+                            save(id, ta.value, status);
+                            
+                            // Update visual state immediately
+                            q.classList.remove('draft', 'final');
+                            q.classList.add(status);
+                            const icon = q.querySelector('.warning-icon');
+                            if (icon) icon.textContent = status === 'final' ? '✅' : '📝';
+                            updateCompletionStatus();
+                        });
+                    }
+                    
+                    if (toggle) {
+                        toggle.addEventListener('change', () => {
+                            const status = toggle.checked ? 'final' : 'draft';
+                            save(id, ta?.value || '', status);
+                            
+                            // Update visual state immediately
+                            q.classList.remove('draft', 'final');
+                            q.classList.add(status);
+                            const icon = q.querySelector('.warning-icon');
+                            if (icon) icon.textContent = status === 'final' ? '✅' : '📝';
+                            updateCompletionStatus();
+                        });
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                alert('Failed to connect to database. Please refresh the page.');
+            }
+        }
+        
+        // Replace saveAnswers with Supabase version
+        function saveAnswers() {
+            // This function is now handled by the save() debounced function above
+            // Keeping this for compatibility with any direct calls
+            console.log('saveAnswers called - using automatic Supabase sync');
+        }
+        
+        // Replace loadSavedAnswers with no-op
+        function loadSavedAnswers() {
+            // Data is loaded from Supabase in initializeSupabase()
+            console.log('loadSavedAnswers called - using Supabase data');
+        }
+        
         // Initialize everything when page loads
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             initializeAccordion();
             initializeScrollTop();
-            updateCompletionStatus();
+            
+            // Initialize Supabase connection and auth
+            await initializeSupabase();
             
             // All accordions start closed (no auto-expand)
         });
+        
+        // Expose functions to global scope for onclick handlers
+        window.toggleMode = toggleMode;
+        window.exportAnswers = exportAnswers;
+        window.importAnswers = importAnswers;
+        window.toggleSection = toggleSection;
+        window.scrollToTop = scrollToTop;
     </script>
 </body>
 </html>

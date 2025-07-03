@@ -1,0 +1,9 @@
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+// TODO: Replace YOUR_PUBLIC_ANON_KEY with your actual Supabase anon key
+// This key is safe to be public as it's designed for client-side use
+// Get it from: Supabase Dashboard > Settings > API
+export const supabase = createClient(
+  "https://anyfhncbazmdixkzipyx.supabase.co",   // Project URL
+  "YOUR_PUBLIC_ANON_KEY"                         // Public anon key - safe to expose
+);

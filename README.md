@@ -24,20 +24,56 @@ The Advanced Engineering & Performance team document is designed to establish da
 - 🟠 **Orange (50%)**: Draft answers
 - 🟢 **Green (100%)**: Final answers
 
+## ⚙️ Setup
+
+### Prerequisites
+- A Supabase account and project
+- Access to Carbon Robotics Google domain (@carbonrobotics.com)
+
+### Configuration Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone <repo-url>
+   cd carbonrobotics-aep-document
+   ```
+
+2. **Set up Supabase**
+   - Create tables by running SQL files in Supabase Dashboard (SQL Editor):
+     - Run `db/001_init_answers.sql` to create the answers table
+     - Run `db/002_seed_answers.sql` to seed initial questions
+   
+3. **Configure client**
+   - Copy `supabaseClient.js.example` → `supabaseClient.js`
+   - Replace `YOUR_PUBLIC_ANON_KEY` with your project's anon key
+   - Get your key from: Supabase Dashboard → Settings → API → Project API keys
+
+4. **Run locally**
+   ```bash
+   python3 -m http.server 3000
+   ```
+   Then open http://localhost:3000
+
+5. **First visit**
+   - You'll be prompted to sign in with Google
+   - Only @carbonrobotics.com accounts have access (enforced by RLS)
+
 ## 🚀 Usage
 
 1. Visit the [live document](https://bryson-maka.github.io/carbonrobotics-aep-document/)
-2. Click "📝 Enable Interactive Mode" to start editing
-3. Answer questions and toggle between Draft/Final status
-4. Use Export/Import to share progress with team members
-5. Monitor overall completion through the progress summary
+2. Sign in with your Carbon Robotics Google account
+3. Answers save automatically as you type (with 500ms debounce)
+4. Toggle between Draft/Final status for each answer
+5. Changes sync in real-time across all open tabs/users
+6. Use Export/Import for offline backup or sharing
 
 ## 💾 Data Persistence
 
-- **Local Storage**: Automatically saves progress in your browser
-- **Export Feature**: Download your answers as a JSON file
-- **Import Feature**: Load answers from a JSON file
-- **Team Collaboration**: Share JSON files to synchronize team progress
+- **Real-time Database**: Answers stored in Supabase with automatic sync
+- **Collaborative Editing**: Multiple users can edit simultaneously
+- **Export Feature**: Download current state as JSON for backup
+- **Import Feature**: Restore from JSON backup files
+- **Row-Level Security**: Only @carbonrobotics.com users can access
 
 ## 🎨 Design
 
@@ -47,8 +83,12 @@ The document uses Carbon Robotics' official color scheme and design language, ma
 
 ```
 /
+├── db/
+│   ├── 001_init_answers.sql                  # Creates answers table with RLS
+│   └── 002_seed_answers.sql                  # Seeds initial question IDs
 ├── index.html                                 # Main interactive document (GitHub Pages)
-├── advanced-engineering_and_performance.html # Source document (same as index.html)
+├── supabaseClient.js                         # Supabase configuration (gitignored)
+├── supabaseClient.js.example                 # Template for Supabase config
 └── README.md                                 # This file
 ```
 
