@@ -1220,8 +1220,6 @@
                 saveBtn.style.display = 'inline-block';
                 exportBtn.style.display = 'inline-block';
                 importBtn.style.display = 'inline-block';
-                loadSavedAnswers();
-                initializeAutoSave();
             } else {
                 body.classList.remove('edit-mode');
                 toggleBtn.textContent = '📝 Enable Interactive Mode';
@@ -1494,19 +1492,6 @@
                 if (statusEl) statusEl.textContent = '🔴 Connection failed';
                 alert('Failed to connect to database. Please refresh the page.');
             }
-        }
-        
-        // Replace saveAnswers with Supabase version
-        function saveAnswers() {
-            // This function is now handled by the save() debounced function above
-            // Keeping this for compatibility with any direct calls
-            console.log('saveAnswers called - using automatic Supabase sync');
-        }
-        
-        // Replace loadSavedAnswers with no-op
-        function loadSavedAnswers() {
-            // Data is loaded from Supabase in initializeSupabase()
-            console.log('loadSavedAnswers called - using Supabase data');
         }
         
         // Initialize everything when page loads
