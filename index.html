@@ -563,7 +563,7 @@
         <div class="controls">
             <div class="controls-left">
                 <button class="edit-toggle" onclick="toggleEditMode()">📝 Enable Interactive Mode</button>
-                <button class="save-btn" onclick="saveAnswers()">💾 Save Answers</button>
+                <button class="save-btn" style="display: none;">💾 Save Answers</button>
             </div>
             <div class="controls-right">
                 <span id="connection-status" style="margin-right: 10px; font-size: 0.9em; color: var(--color-text-secondary);"></span>
@@ -1375,12 +1375,22 @@
             try {
                 // Update status
                 if (statusEl) statusEl.textContent = '🔄 Connecting...';
+                console.log('Initializing Supabase auth...');
                 
                 // Check if we're coming back from OAuth redirect
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
                 const accessToken = hashParams.get('access_token');
+                const error = hashParams.get('error');
+                const errorDescription = hashParams.get('error_description');
+                
+                if (error) {
+                    console.error('OAuth error:', error, errorDescription);
+                    if (statusEl) statusEl.textContent = `🔴 Auth error: ${error}`;
+                    return;
+                }
                 
                 if (accessToken) {
+                    console.log('Found access token in URL, processing callback...');
                     // Wait a moment for Supabase to process the OAuth callback
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     // Clean up the URL
@@ -1408,10 +1418,14 @@
                     if (statusEl) statusEl.textContent = '🔐 Redirecting to login...';
                     sessionStorage.setItem('oauth_redirecting', 'true');
                     
+                    // Log the redirect URL for debugging
+                    const redirectUrl = window.location.origin + window.location.pathname;
+                    console.log('OAuth redirect URL:', redirectUrl);
+                    
                     const { error: signInError } = await supabase.auth.signInWithOAuth({ 
                         provider: 'google', 
                         options: { 
-                            redirectTo: window.location.origin + window.location.pathname,
+                            redirectTo: redirectUrl,
                             scopes: 'email'
                         } 
                     });
