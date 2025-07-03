@@ -1444,8 +1444,8 @@
                 }
                 
                 // Load initial data
-                const { data: rows, error } = await supabase.from('answers').select();
-                if (error) throw error;
+                const { data: rows, error: fetchError } = await supabase.from('answers').select();
+                if (fetchError) throw fetchError;
                 
                 rows?.forEach(r => {
                     const q = document.querySelector(`[data-question="${r.id}"]`);
