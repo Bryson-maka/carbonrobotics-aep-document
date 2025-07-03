@@ -1339,13 +1339,21 @@
         
         // Save helper with debounce
         const save = _.debounce(async (id, text, status) => {
+            console.log('Saving answer:', { id, text: text.substring(0, 50) + '...', status });
             try {
-                await supabase.from('answers').upsert({ 
+                const { data, error } = await supabase.from('answers').upsert({ 
                     id, 
                     text, 
                     status,
                     updated_at: new Date().toISOString()
                 });
+                
+                if (error) {
+                    console.error('Save failed:', error);
+                    throw error;
+                }
+                
+                console.log('Save successful:', data);
                 
                 // Show save confirmation
                 const saveBtn = document.querySelector('.save-btn');
@@ -1398,12 +1406,18 @@
                 }
                 
                 // Check session
+                console.log('Checking for existing session...');
                 let { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 
                 if (sessionError) {
                     console.error('Session error:', sessionError);
                     if (statusEl) statusEl.textContent = '🔴 Session error';
                     return;
+                }
+                
+                console.log('Session found:', session ? 'Yes' : 'No');
+                if (session) {
+                    console.log('User email:', session.user.email);
                 }
                 
                 if (!session) {
@@ -1444,8 +1458,16 @@
                 }
                 
                 // Load initial data
+                console.log('Loading answers from database...');
                 const { data: rows, error: fetchError } = await supabase.from('answers').select();
-                if (fetchError) throw fetchError;
+                
+                if (fetchError) {
+                    console.error('Failed to load answers:', fetchError);
+                    throw fetchError;
+                }
+                
+                console.log('Loaded answers:', rows?.length || 0, 'rows');
+                console.log('Answer data:', rows);
                 
                 rows?.forEach(r => {
                     const q = document.querySelector(`[data-question="${r.id}"]`);
