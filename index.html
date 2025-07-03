@@ -1375,14 +1375,51 @@
                 // Update status
                 if (statusEl) statusEl.textContent = '🔄 Connecting...';
                 
+                // Check if we're coming back from OAuth redirect
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                
+                if (accessToken) {
+                    // Wait a moment for Supabase to process the OAuth callback
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    // Clean up the URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+                
                 // Check session
-                let { data: { session } } = await supabase.auth.getSession();
+                let { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError) {
+                    console.error('Session error:', sessionError);
+                    if (statusEl) statusEl.textContent = '🔴 Session error';
+                    return;
+                }
+                
                 if (!session) {
+                    // Check if we're already in the process of redirecting
+                    const isRedirecting = sessionStorage.getItem('oauth_redirecting');
+                    if (isRedirecting) {
+                        console.log('Already redirecting, waiting...');
+                        sessionStorage.removeItem('oauth_redirecting');
+                        return;
+                    }
+                    
                     if (statusEl) statusEl.textContent = '🔐 Redirecting to login...';
-                    await supabase.auth.signInWithOAuth({ 
+                    sessionStorage.setItem('oauth_redirecting', 'true');
+                    
+                    const { error: signInError } = await supabase.auth.signInWithOAuth({ 
                         provider: 'google', 
-                        options: { redirectTo: location.href } 
+                        options: { 
+                            redirectTo: window.location.origin + window.location.pathname,
+                            scopes: 'email'
+                        } 
                     });
+                    
+                    if (signInError) {
+                        console.error('Sign in error:', signInError);
+                        sessionStorage.removeItem('oauth_redirecting');
+                        if (statusEl) statusEl.textContent = '🔴 Sign in failed';
+                    }
                     return; // Will redirect
                 }
                 
@@ -1498,6 +1535,15 @@
         window.addEventListener('load', async () => {
             initializeAccordion();
             initializeScrollTop();
+            
+            // Set up auth state listener first
+            supabase.auth.onAuthStateChange(async (event, session) => {
+                console.log('Auth state changed:', event);
+                if (event === 'SIGNED_IN' && session) {
+                    // User just signed in, reinitialize
+                    await initializeSupabase();
+                }
+            });
             
             // Initialize Supabase connection and auth
             await initializeSupabase();
