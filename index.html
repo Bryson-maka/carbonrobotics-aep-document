@@ -1232,86 +1232,6 @@
             }
         }
 
-        function saveAnswers() {
-            const answers = {};
-            document.querySelectorAll('[data-question]').forEach(questionEl => {
-                const questionId = questionEl.getAttribute('data-question');
-                const textarea = questionEl.querySelector('.answer-input');
-                const statusToggle = questionEl.querySelector('.status-toggle');
-                
-                if (textarea && textarea.value.trim()) {
-                    const isFinal = statusToggle.checked;
-                    answers[questionId] = {
-                        text: textarea.value.trim(),
-                        status: isFinal ? 'final' : 'draft'
-                    };
-                    
-                    // Update classes and icon
-                    questionEl.classList.remove('draft', 'final');
-                    questionEl.classList.add(isFinal ? 'final' : 'draft');
-                    
-                    const icon = questionEl.querySelector('.warning-icon');
-                    if (icon) {
-                        icon.textContent = isFinal ? '✅' : '📝';
-                    }
-                } else {
-                    // Remove classes if no answer
-                    questionEl.classList.remove('draft', 'final');
-                    const icon = questionEl.querySelector('.warning-icon');
-                    if (icon) {
-                        icon.textContent = '⚠️';
-                    }
-                }
-            });
-            
-            localStorage.setItem('aep-answers-v2', JSON.stringify(answers));
-            
-            // Update completion status
-            updateCompletionStatus();
-            
-            // Show save confirmation
-            const saveBtn = document.querySelector('.save-btn');
-            const originalText = saveBtn.textContent;
-            saveBtn.textContent = '✓ Saved!';
-            setTimeout(() => {
-                saveBtn.textContent = originalText;
-            }, 2000);
-        }
-
-        function loadSavedAnswers() {
-            const saved = localStorage.getItem('aep-answers-v2');
-            if (saved) {
-                const answers = JSON.parse(saved);
-                Object.entries(answers).forEach(([questionId, answerData]) => {
-                    const questionEl = document.querySelector(`[data-question="${questionId}"]`);
-                    if (questionEl) {
-                        const textarea = questionEl.querySelector('.answer-input');
-                        const statusToggle = questionEl.querySelector('.status-toggle');
-                        
-                        if (textarea && answerData.text) {
-                            textarea.value = answerData.text;
-                            
-                            if (statusToggle) {
-                                statusToggle.checked = answerData.status === 'final';
-                            }
-                            
-                            // Update classes and icon
-                            questionEl.classList.remove('draft', 'final');
-                            questionEl.classList.add(answerData.status);
-                            
-                            const icon = questionEl.querySelector('.warning-icon');
-                            if (icon) {
-                                icon.textContent = answerData.status === 'final' ? '✅' : '📝';
-                            }
-                        }
-                    }
-                });
-                
-                // Update completion status after loading
-                updateCompletionStatus();
-            }
-        }
-
         // Export/Import functionality
         async function exportAnswers() {
             try {
@@ -1413,33 +1333,6 @@
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
-            });
-        }
-
-        // Auto-save functionality
-        function initializeAutoSave() {
-            if (!editMode) return;
-            
-            let saveTimeout;
-            
-            // Add listeners to textareas
-            document.querySelectorAll('.answer-input').forEach(textarea => {
-                textarea.addEventListener('input', () => {
-                    clearTimeout(saveTimeout);
-                    saveTimeout = setTimeout(() => {
-                        saveAnswers();
-                    }, 2000);
-                });
-            });
-            
-            // Add listeners to toggle switches
-            document.querySelectorAll('.status-toggle').forEach(toggle => {
-                toggle.addEventListener('change', () => {
-                    clearTimeout(saveTimeout);
-                    saveTimeout = setTimeout(() => {
-                        saveAnswers();
-                    }, 500);
-                });
             });
         }
 
@@ -1636,12 +1529,11 @@
         }
         
         // Expose functions to global scope for onclick handlers
-        window.toggleMode = toggleMode;
-        window.exportAnswers = exportAnswers;
-        window.importAnswers = importAnswers;
-        window.toggleSection = toggleSection;
-        window.scrollToTop = scrollToTop;
-        window.signOut = signOut;
+        window.toggleEditMode = toggleEditMode;
+        window.exportAnswers   = exportAnswers;
+        window.importAnswers   = importAnswers;
+        window.scrollToTop     = scrollToTop;
+        window.signOut         = signOut;
     </script>
 </body>
 </html>

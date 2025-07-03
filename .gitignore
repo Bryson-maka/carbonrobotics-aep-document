@@ -34,3 +34,4 @@ supabaseClient.js
 
 # OAuth client secrets
 client_secret_*.json
+client_secret_*
