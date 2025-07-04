@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { QuestionCard } from "./QuestionCard";
+import { useSectionProgress } from "@/hooks/useSectionProgress";
 
 interface Section {
   id: string;
@@ -31,13 +32,11 @@ interface SectionCardProps {
 }
 
 export function SectionCard({ section }: SectionCardProps) {
-  const completedCount = section.questions.filter(
-    (q) => q.answers?.[0]?.status === "final"
-  ).length;
-  const draftCount = section.questions.filter(
-    (q) => q.answers?.[0]?.status === "draft"
-  ).length;
-  const totalCount = section.questions.length;
+  const { data: progress } = useSectionProgress(section.id);
+  
+  const finalCount = progress ? Math.floor(progress.score) : 0;
+  const draftCount = progress ? Math.round((progress.score - finalCount) * 2) : 0;
+  const totalCount = progress?.total || section.questions.length;
 
   return (
     <Accordion type="single" collapsible className="w-full">
@@ -46,7 +45,7 @@ export function SectionCard({ section }: SectionCardProps) {
           <div className="flex items-center justify-between w-full pr-4">
             <span className="font-semibold">{section.title}</span>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-green-600">{completedCount}</span>/
+              <span className="text-green-600">{finalCount}</span>/
               <span className="text-orange-600">{draftCount}</span>/
               <span className="text-gray-600">{totalCount}</span>
             </div>
@@ -59,8 +58,9 @@ export function SectionCard({ section }: SectionCardProps) {
               .map((question) => (
                 <QuestionCard 
                   key={question.id} 
+                  questionId={question.id}
                   prompt={question.prompt}
-                  status={question.answers?.[0]?.status}
+                  userRole="editor"
                 />
               ))}
           </div>

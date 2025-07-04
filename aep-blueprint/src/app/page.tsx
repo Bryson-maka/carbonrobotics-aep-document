@@ -2,7 +2,7 @@
 
 import { useSections } from "@/hooks/useSections";
 import { SectionCard } from "@/components/SectionCard";
-import { ProgressBar } from "@/components/ProgressBar";
+import { GlobalProgressWidget } from "@/components/GlobalProgressWidget";
 
 export default function Home() {
   const { data: sections, isLoading, error } = useSections();
@@ -41,7 +41,7 @@ export default function Home() {
           <p className="text-gray-600 mb-6">
             Advanced Engineering & Performance Team Scope
           </p>
-          <ProgressBar sections={sections} />
+          <GlobalProgressWidget />
         </header>
 
         <div className="space-y-4">
