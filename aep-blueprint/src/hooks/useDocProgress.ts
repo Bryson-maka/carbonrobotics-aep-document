@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 interface DocProgress {
   score: number;
   total: number;
+  percent: number;
 }
 
 export function useDocProgress() {

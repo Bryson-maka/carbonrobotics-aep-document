@@ -6,6 +6,7 @@ interface SectionProgress {
   section_id: string;
   score: number;
   total: number;
+  percent: number;
 }
 
 export function useSectionProgress(sectionId: string) {

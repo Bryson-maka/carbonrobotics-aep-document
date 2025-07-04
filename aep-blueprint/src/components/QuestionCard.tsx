@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { AnswerEditor } from "./editor/AnswerEditor";
 import { AnswerViewer } from "./editor/AnswerViewer";
 import { useAnswer } from "@/hooks/useAnswer";
+import { UserRole } from "@/hooks/useUserRole";
 
 interface QuestionCardProps {
   questionId: string;
   prompt: string;
-  userRole?: "editor" | "viewer";
+  userRole?: UserRole;
 }
 
 export function QuestionCard({ 
@@ -44,7 +45,7 @@ export function QuestionCard({
               {answer.status}
             </Badge>
           )}
-          {userRole === "editor" && (
+          {(userRole === "editor" || userRole === "admin") && (
             <Button
               size="sm"
               variant="ghost"

@@ -6,6 +6,7 @@ import Image from "@tiptap/extension-image";
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import { uploadImageToSupabase } from "@/lib/image-upload";
 
 interface AnswerEditorProps {
   questionId: string;
@@ -72,7 +73,7 @@ export function AnswerEditor({
     }
   }, [editor, questionId, status, onSave]);
 
-  const handleImageUpload = useCallback(() => {
+  const handleImageUpload = useCallback(async () => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
@@ -80,12 +81,21 @@ export function AnswerEditor({
       const file = input.files?.[0];
       if (!file || !editor) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const url = reader.result as string;
-        editor.chain().focus().setImage({ src: url }).run();
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Show loading state
+        editor.chain().focus().setImage({ src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJWNk0xMiAyVjZNMTIgMThWMjJNMTIgMThWMjJNNiAxMkgyTTYgMTJIMk0yMiAxMkgxOE0yMiAxMkgxOE00LjkzIDQuOTNMNy43NiA3Ljc2TTQuOTMgNC45M0w3Ljc2IDcuNzZNMTkuMDcgMTkuMDdMMTYuMjQgMTYuMjRNMTkuMDcgMTkuMDdMMTYuMjQgMTYuMjRNMTkuMDcgNC45M0wxNi4yNCA3Ljc2TTE5LjA3IDQuOTNMMTYuMjQgNy43Nk00LjkzIDE5LjA3TDcuNzYgMTYuMjRNNC45MyAxOS4wN0w3Ljc2IDE2LjI0IiBzdHJva2U9IiNjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8YW5pbWF0ZVRyYW5zZm9ybSBhdHRyaWJ1dGVOYW1lPSJ0cmFuc2Zvcm0iIGF0dHJpYnV0ZVR5cGU9IlhNTCIgdHlwZT0icm90YXRlIiBkdXI9IjFzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIgdmFsdWVzPSIwIDEyIDEyOzM2MCAxMiAxMiI+PC9hbmltYXRlVHJhbnNmb3JtPgo8L3BhdGg+Cjwvc3ZnPgo=' }).run();
+
+        // Upload to Supabase Storage
+        const publicUrl = await uploadImageToSupabase(file);
+        
+        // Update with actual image URL
+        editor.chain().focus().setImage({ src: publicUrl }).run();
+      } catch (error) {
+        console.error('Image upload failed:', error);
+        // Remove loading image on error
+        editor.chain().focus().deleteSelection().run();
+        alert('Failed to upload image. Please try again.');
+      }
     };
     input.click();
   }, [editor]);

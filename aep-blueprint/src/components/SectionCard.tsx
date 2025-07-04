@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { QuestionCard } from "./QuestionCard";
 import { useSectionProgress } from "@/hooks/useSectionProgress";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface Section {
   id: string;
@@ -33,6 +34,7 @@ interface SectionCardProps {
 
 export function SectionCard({ section }: SectionCardProps) {
   const { data: progress } = useSectionProgress(section.id);
+  const { role } = useUserRole();
   
   const finalCount = progress ? Math.floor(progress.score) : 0;
   const draftCount = progress ? Math.round((progress.score - finalCount) * 2) : 0;
@@ -60,7 +62,7 @@ export function SectionCard({ section }: SectionCardProps) {
                   key={question.id} 
                   questionId={question.id}
                   prompt={question.prompt}
-                  userRole="editor"
+                  userRole={role}
                 />
               ))}
           </div>

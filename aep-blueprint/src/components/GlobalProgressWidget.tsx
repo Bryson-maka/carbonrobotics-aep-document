@@ -17,10 +17,6 @@ export function GlobalProgressWidget() {
     return null;
   }
 
-  const progressPercentage = progress.total > 0
-    ? (progress.score / progress.total) * 100
-    : 0;
-
   const finalCount = Math.floor(progress.score);
   const draftCount = Math.round((progress.score - finalCount) * 2);
   const unansweredCount = progress.total - finalCount - draftCount;
@@ -30,12 +26,12 @@ export function GlobalProgressWidget() {
       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
         <div
           className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-          style={{ width: `${progressPercentage}%` }}
+          style={{ width: `${progress.percent}%` }}
         />
       </div>
       <div className="text-sm text-gray-600">
         Overall Progress: {finalCount} final, {draftCount} draft, {unansweredCount} unanswered
-        ({Math.round(progressPercentage)}% complete)
+        ({progress.percent}% complete)
       </div>
     </div>
   );
