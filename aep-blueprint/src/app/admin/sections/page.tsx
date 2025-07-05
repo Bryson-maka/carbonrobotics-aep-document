@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSections } from "@/hooks/useSections";
+import { useSections } from "@/hooks/sections";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, ExternalLink, Download } from "lucide-react";

@@ -61,7 +61,10 @@ export function SortableQuestionItem({
           <Button
             size="sm"
             variant="outline"
-            onClick={() => setShowHistory(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowHistory(true);
+            }}
             className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
           >
             <Info className="w-4 h-4" />
@@ -69,14 +72,20 @@ export function SortableQuestionItem({
           <Button
             size="sm"
             variant="outline"
-            onClick={() => onEdit(question)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(question);
+            }}
           >
             <Edit className="w-4 h-4" />
           </Button>
           <Button
             size="sm"
             variant="outline"
-            onClick={() => onDelete(question.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(question.id);
+            }}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <Trash2 className="w-4 h-4" />

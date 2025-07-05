@@ -1,7 +1,8 @@
 "use client";
 
-import { useSections } from "@/hooks/useSections";
-import { SectionCard } from "@/components/SectionCard";
+import { useSections } from "@/hooks/sections";
+import { SortableSectionList } from "@/components/SortableSectionList";
+import { AddSectionCard } from "@/components/AddSectionCard";
 import { GlobalProgressWidget } from "@/components/GlobalProgressWidget";
 
 export default function Home() {
@@ -23,33 +24,54 @@ export default function Home() {
     );
   }
 
-  if (!sections || sections.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">No sections found</div>
-      </div>
-    );
-  }
+  // Don't block on empty sections - allow creating new ones
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-6">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            AEP Blueprint
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Advanced Engineering & Performance Team Scope
-          </p>
-          <GlobalProgressWidget />
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+      <div className="max-w-6xl mx-auto">
+        {/* Header with Carbon Robotics styling */}
+        <header className="aep-header">
+          <div className="text-center">
+            <h1 className="text-4xl font-light mb-2">
+              Advanced Engineering & Performance
+            </h1>
+            <div className="text-xl opacity-90 mb-4">
+              Team Scope Blueprint
+            </div>
+            <div className="flex justify-center gap-8 text-sm opacity-80">
+              <div>Carbon Robotics</div>
+              <div>•</div>
+              <div>Q1 2025 - Q4 2025</div>
+              <div>•</div>
+              <div>AEP Team</div>
+            </div>
+          </div>
         </header>
 
-        <div className="space-y-4">
-          {sections
-            .sort((a, b) => a.order_idx - b.order_idx)
-            .map((section) => (
-              <SectionCard key={section.id} section={section} />
-            ))}
+        {/* Controls bar */}
+        <div className="aep-section flex justify-between items-center" style={{ backgroundColor: 'var(--color-bg-surface)' }}>
+          <div className="flex items-center gap-4">
+            <GlobalProgressWidget />
+          </div>
+          <div className="flex items-center gap-2">
+            <a href="/setup" className="aep-button text-sm">
+              Setup Database
+            </a>
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="p-6 space-y-6">
+          {sections && sections.length > 0 && (
+            <SortableSectionList 
+              sections={sections.sort((a, b) => a.order_idx - b.order_idx)} 
+              onSectionsChange={() => {
+                // No manual refetch needed - React Query handles cache updates
+              }}
+            />
+          )}
+          
+          <AddSectionCard />
         </div>
       </div>
     </div>

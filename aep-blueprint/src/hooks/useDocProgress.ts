@@ -34,12 +34,22 @@ export function useDocProgress() {
   return useQuery({
     queryKey: ["doc-progress", refetchTrigger],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("v_doc_progress")
-        .select("*")
-        .single();
-      
-      return data as DocProgress;
+      try {
+        const { data, error } = await supabase
+          .from("v_doc_progress")
+          .select("*")
+          .single();
+        
+        if (error) {
+          console.error("Doc progress view error:", error);
+          return { score: 0, total: 0 };
+        }
+        
+        return data as DocProgress;
+      } catch (error) {
+        console.error("Doc progress query failed:", error);
+        return { score: 0, total: 0 };
+      }
     },
   });
 }

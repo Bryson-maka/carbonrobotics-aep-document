@@ -33,6 +33,7 @@ export function AnswerEditor({
       }),
     ],
     content: initialContent || "",
+    immediatelyRender: false, // Fix SSR hydration issues
     onUpdate: () => {
       setHasChanges(true);
     },

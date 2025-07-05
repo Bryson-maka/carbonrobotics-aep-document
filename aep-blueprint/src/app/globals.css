@@ -45,6 +45,21 @@
 
 :root {
   --radius: 0.625rem;
+  
+  /* Carbon Robotics brand colors */
+  --color-accent: #A9421F;
+  --color-accent-hover: #87422D;
+  --color-bg-primary: #111518;
+  --color-bg-sidebar: #323F48;
+  --color-bg-surface: #52525B;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #C6C7C8;
+  --color-border-custom: #3C3C3C;
+  --color-progress-red: #dc3545;
+  --color-progress-orange: #fd7e14;
+  --color-progress-yellow: #ffc107;
+  --color-progress-green: #28a745;
+  
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -116,7 +131,104 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
   }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-bg-surface);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
+  }
+}
+
+@layer components {
+  .aep-card {
+    background-color: var(--color-bg-sidebar);
+    border: 1px solid var(--color-border-custom);
+    @apply rounded-lg p-6;
+  }
+  
+  .aep-section {
+    background-color: var(--color-bg-surface);
+    @apply rounded-lg p-4 mb-4;
+  }
+  
+  .aep-header {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+    @apply text-white p-8 rounded-t-lg;
+  }
+  
+  .aep-button {
+    background-color: var(--color-accent);
+    @apply text-white px-4 py-2 rounded transition-colors;
+  }
+  
+  .aep-button:hover {
+    background-color: var(--color-accent-hover);
+  }
+}
+
+/* TipTap editor dark theme overrides */
+.ProseMirror {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  @apply min-h-[200px] p-4 rounded;
+}
+
+.ProseMirror:focus {
+  @apply outline-none ring-2 ring-offset-2;
+  --tw-ring-color: var(--color-accent);
+  background-color: var(--color-bg-sidebar);
+}
+
+/* Drag and drop styles */
+.sortable-item {
+  position: relative;
+}
+
+.sortable-item.dragging {
+  z-index: 1000;
+}
+
+/* Progress bar styles */
+.progress-bar {
+  background-color: var(--color-bg-primary);
+  @apply h-2 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full transition-all duration-300 ease-out;
+}
+
+.progress-fill.red {
+  background-color: var(--color-progress-red);
+}
+
+.progress-fill.orange {
+  background-color: var(--color-progress-orange);
+}
+
+.progress-fill.yellow {
+  background-color: var(--color-progress-yellow);
+}
+
+.progress-fill.green {
+  background-color: var(--color-progress-green);
 }
