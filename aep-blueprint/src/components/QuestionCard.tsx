@@ -7,6 +7,7 @@ import { EnhancedAnswerEditor } from "./editor/EnhancedAnswerEditor";
 import { AnswerViewer } from "./editor/AnswerViewer";
 import { useAnswer } from "@/hooks/useAnswer";
 import { useDeleteAnswer } from "@/hooks/answers";
+import { useCanEdit } from "@/hooks/useUserProfile";
 
 interface QuestionCardProps {
   questionId: string;
@@ -22,6 +23,7 @@ export function QuestionCard({
   const [isEditing, setIsEditing] = useState(false);
   const { answer, loading } = useAnswer(questionId);
   const deleteAnswerMutation = useDeleteAnswer();
+  const canEdit = useCanEdit();
 
   const handleSave = () => {
     setIsEditing(false);
@@ -75,7 +77,7 @@ export function QuestionCard({
               {answer.status.toUpperCase()}
             </Badge>
           )}
-          {userRole === "editor" && (
+          {canEdit && (
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
