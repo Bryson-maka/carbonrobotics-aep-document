@@ -52,7 +52,13 @@ export function EnhancedAnswerEditor({
 
   useEffect(() => {
     if (editor && initialContent) {
-      editor.commands.setContent(initialContent);
+      // Only set content if it's valid TipTap content (not chart data)
+      if (typeof initialContent === 'object' && 'type' in initialContent && initialContent.type === 'doc') {
+        editor.commands.setContent(initialContent);
+      } else if (typeof initialContent === 'string') {
+        editor.commands.setContent(initialContent);
+      }
+      // Don't set content if it contains chart data
       setHasChanges(false);
     }
   }, [editor, initialContent]);

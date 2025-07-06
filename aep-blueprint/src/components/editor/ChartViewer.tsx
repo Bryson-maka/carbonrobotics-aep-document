@@ -16,6 +16,8 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  PieController,
+  DoughnutController,
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 
@@ -29,7 +31,9 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  PieController,
+  DoughnutController
 );
 
 // Configure Chart.js defaults for better performance
