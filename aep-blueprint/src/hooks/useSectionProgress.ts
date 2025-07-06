@@ -11,26 +11,27 @@ interface SectionProgress {
 export function useSectionProgress(sectionId: string) {
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("section-progress")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "answers",
-        },
-        () => {
-          setRefetchTrigger(prev => prev + 1);
-        }
-      )
-      .subscribe();
+  // Disabled real-time updates to prevent WebSocket errors in production
+  // useEffect(() => {
+  //   const channel = supabase
+  //     .channel("section-progress")
+  //     .on(
+  //       "postgres_changes",
+  //       {
+  //         event: "*",
+  //         schema: "public",
+  //         table: "answers",
+  //       },
+  //       () => {
+  //         setRefetchTrigger(prev => prev + 1);
+  //       }
+  //     )
+  //     .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, []);
 
   return useQuery({
     queryKey: ["section-progress", sectionId, refetchTrigger],
