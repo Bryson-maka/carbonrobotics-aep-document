@@ -139,8 +139,7 @@ export function ChartViewer({ config }: ChartViewerProps) {
           </div>
         </div>
         
-        {/* Data preview */}
-        {config.data && (
+        {config.data ? (
           <div className="mt-4 text-xs">
             <details className="cursor-pointer">
               <summary className="font-medium">View Data</summary>
@@ -149,7 +148,7 @@ export function ChartViewer({ config }: ChartViewerProps) {
               </pre>
             </details>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

@@ -24,7 +24,7 @@ export function MediaUploader({ questionId, onSave }: MediaUploaderProps) {
 
     setUploading(true);
     try {
-      const uploadedFiles = [];
+      const uploadedFiles: any[] = [];
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i];

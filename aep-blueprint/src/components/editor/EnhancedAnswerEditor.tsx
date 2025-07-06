@@ -78,7 +78,7 @@ export function EnhancedAnswerEditor({
         input: {
           content,
           status,
-          content_type: contentType,
+          content_type: contentType as "text" | "chart" | "media" | "interactive",
         },
       });
 

@@ -71,7 +71,7 @@ export function useSectionProgress(sectionId: string) {
             .eq("section_id", sectionId);
 
           if (calcError || !progressData) {
-            return { section_id: sectionId, score: 0, total: progressData?.length || 0 };
+            return { section_id: sectionId, score: 0, total: 0 };
           }
 
           let score = 0;

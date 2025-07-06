@@ -158,9 +158,9 @@ export class AnswerService extends BaseService {
       content: dbAnswer.content ? JSON.parse(dbAnswer.content as string) : null,
       status: dbAnswer.status,
       content_type: dbAnswer.content_type,
-      chart_config: dbAnswer.chart_config ? JSON.parse(dbAnswer.chart_config as string) : null,
+      chart_config: dbAnswer.chart_config ? JSON.parse(dbAnswer.chart_config as unknown as string) : null,
       media_urls: dbAnswer.media_urls || null,
-      interactive_data: dbAnswer.interactive_data ? JSON.parse(dbAnswer.interactive_data as string) : null,
+      interactive_data: dbAnswer.interactive_data ? JSON.parse(dbAnswer.interactive_data as unknown as string) : null,
     };
   }
 }
