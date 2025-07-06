@@ -75,7 +75,7 @@ export function useSectionProgress(sectionId: string) {
           }
 
           let score = 0;
-          let total = progressData.length;
+          const total = progressData.length;
 
           progressData.forEach(question => {
             if (question.answers && question.answers.length > 0) {

@@ -17,7 +17,7 @@ export function AnswerViewer({ answer, content, status }: AnswerViewerProps) {
   // Handle both new answer object and legacy props
   const answerData = answer || { content, status, content_type: 'text' };
   
-  if (!answerData.content && !answerData.chart_config && !answerData.media_urls && !answerData.interactive_data) {
+  if (!answerData.content && !('chart_config' in answerData && answerData.chart_config) && !('media_urls' in answerData && answerData.media_urls) && !('interactive_data' in answerData && answerData.interactive_data)) {
     return (
       <div 
         className="text-center py-8 border-2 border-dashed rounded-lg" 
@@ -40,17 +40,17 @@ export function AnswerViewer({ answer, content, status }: AnswerViewerProps) {
   const renderContentByType = () => {
     switch (contentType) {
       case 'chart':
-        return answerData.chart_config ? (
+        return ('chart_config' in answerData && answerData.chart_config) ? (
           <ChartViewer config={answerData.chart_config} />
         ) : null;
         
       case 'media':
-        return answerData.media_urls ? (
+        return ('media_urls' in answerData && answerData.media_urls) ? (
           <MediaViewer urls={answerData.media_urls} />
         ) : null;
         
       case 'interactive':
-        return answerData.interactive_data ? (
+        return ('interactive_data' in answerData && answerData.interactive_data) ? (
           <InteractiveViewer data={answerData.interactive_data} />
         ) : null;
         

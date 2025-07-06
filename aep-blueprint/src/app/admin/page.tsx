@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default function AdminPage() {
   const { data: sections, refetch } = useSections();
@@ -260,7 +261,7 @@ export default function AdminPage() {
 
       <div className="mt-8 text-center">
         <Button asChild className="aep-button">
-          <a href="/">← Back to Main Blueprint</a>
+          <Link href="/">← Back to Main Blueprint</Link>
         </Button>
       </div>
     </div>

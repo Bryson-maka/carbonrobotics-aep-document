@@ -12,7 +12,7 @@ import { useCanEdit } from "@/hooks/useUserProfile";
 interface QuestionCardProps {
   questionId: string;
   prompt: string;
-  userRole?: "editor" | "viewer";
+  userRole?: "editor" | "viewer"; // Keep for backwards compatibility
 }
 
 export function QuestionCard({ 

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   console.log('🔄 Auth callback received:', { code: !!code, next })
 
   if (code) {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -57,7 +57,9 @@ export async function GET(request: NextRequest) {
         const response = NextResponse.redirect(`${requestUrl.origin}${next}`)
         
         // Set cookies manually as well to ensure they persist
-        const maxAge = Math.floor((data.session.expires_at * 1000 - Date.now()) / 1000)
+        const maxAge = data.session.expires_at 
+          ? Math.floor((data.session.expires_at * 1000 - Date.now()) / 1000)
+          : 60 * 60 * 24 // Default to 24 hours
         
         response.cookies.set('sb-access-token', data.session.access_token, {
           path: '/',
