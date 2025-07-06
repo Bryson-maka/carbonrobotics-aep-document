@@ -205,7 +205,14 @@ export function EnhancedAnswerEditor({
             </TabsContent>
 
             <TabsContent value="chart" className="space-y-4">
-              <ChartBuilder questionId={questionId} onSave={() => setHasChanges(true)} />
+              <ChartBuilder 
+                questionId={questionId} 
+                initialConfig={initialContent?.chart as any}
+                onSave={() => {
+                  setHasChanges(true);
+                  onSave?.();
+                }} 
+              />
             </TabsContent>
 
             <TabsContent value="media" className="space-y-4">

@@ -41,7 +41,11 @@ export function AnswerViewer({ answer, content, status }: AnswerViewerProps) {
     switch (contentType) {
       case 'chart':
         return ('chart_config' in answerData && answerData.chart_config) ? (
-          <ChartViewer config={answerData.chart_config} />
+          <ChartViewer 
+            config={answerData.chart_config} 
+            questionId={answer?.question_id}
+            showActions={true}
+          />
         ) : null;
         
       case 'media':

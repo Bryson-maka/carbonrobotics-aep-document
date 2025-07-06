@@ -1,116 +1,118 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Download, RefreshCw } from "lucide-react";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from 'chart.js';
+import { Chart } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
+
+// Configure Chart.js defaults for better performance
+ChartJS.defaults.animation = false;
 
 interface ChartViewerProps {
   config: Record<string, unknown>;
+  questionId?: string;
+  showActions?: boolean;
 }
 
-export function ChartViewer({ config }: ChartViewerProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export function ChartViewer({ config, questionId, showActions = false }: ChartViewerProps) {
+  const chartRef = useRef<ChartJS>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Ensure Chart.js only renders on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const validateChartConfig = (config: any) => {
+    if (!config || typeof config !== 'object') {
+      return 'Invalid chart configuration';
+    }
+    if (!config.type) {
+      return 'Chart type is required';
+    }
+    if (!config.data || !config.data.labels || !config.data.datasets) {
+      return 'Chart data is incomplete';
+    }
+    if (config.data.labels.length === 0) {
+      return 'Chart has no data points';
+    }
+    return null;
+  };
 
   useEffect(() => {
-    // For now, we'll show a placeholder since Chart.js isn't installed yet
-    // In production, this would render the actual chart using Chart.js
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Draw a simple placeholder chart
-    const chartType = (config.type as string) || 'pie';
-    const data = config.data as any;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw placeholder based on chart type
-    if (chartType === 'pie') {
-      drawPiePlaceholder(ctx, canvas.width, canvas.height, data);
-    } else if (chartType === 'bar') {
-      drawBarPlaceholder(ctx, canvas.width, canvas.height, data);
-    } else {
-      drawLinePlaceholder(ctx, canvas.width, canvas.height, data);
-    }
+    const validationError = validateChartConfig(config);
+    setError(validationError);
   }, [config]);
 
-  const drawPiePlaceholder = (ctx: CanvasRenderingContext2D, width: number, height: number, data: any) => {
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const radius = Math.min(width, height) / 3;
-    
-    const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6'];
-    const total = data?.datasets?.[0]?.data?.reduce((sum: number, val: number) => sum + val, 0) || 100;
-    let currentAngle = 0;
-    
-    data?.datasets?.[0]?.data?.forEach((value: number, index: number) => {
-      const sliceAngle = (value / total) * 2 * Math.PI;
-      
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
-      ctx.closePath();
-      
-      ctx.fillStyle = colors[index % colors.length];
-      ctx.fill();
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      
-      currentAngle += sliceAngle;
-    });
+  const downloadChart = () => {
+    const chart = chartRef.current;
+    if (chart) {
+      const url = chart.toBase64Image();
+      const link = document.createElement('a');
+      link.download = `chart-${questionId || 'untitled'}.png`;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
-  const drawBarPlaceholder = (ctx: CanvasRenderingContext2D, width: number, height: number, data: any) => {
-    const padding = 40;
-    const chartWidth = width - padding * 2;
-    const chartHeight = height - padding * 2;
-    const barCount = data?.labels?.length || 4;
-    const barWidth = chartWidth / barCount * 0.8;
-    const maxValue = Math.max(...(data?.datasets?.[0]?.data || [100, 80, 60, 90]));
-    
-    const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B'];
-    
-    data?.datasets?.[0]?.data?.forEach((value: number, index: number) => {
-      const barHeight = (value / maxValue) * chartHeight;
-      const x = padding + (index * chartWidth / barCount) + (chartWidth / barCount - barWidth) / 2;
-      const y = height - padding - barHeight;
-      
-      ctx.fillStyle = colors[index % colors.length];
-      ctx.fillRect(x, y, barWidth, barHeight);
-    });
-  };
-
-  const drawLinePlaceholder = (ctx: CanvasRenderingContext2D, width: number, height: number, data: any) => {
-    const padding = 40;
-    const chartWidth = width - padding * 2;
-    const chartHeight = height - padding * 2;
-    const points = data?.datasets?.[0]?.data || [30, 50, 40, 70, 60, 80];
-    const maxValue = Math.max(...points);
-    
-    ctx.strokeStyle = '#3B82F6';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    
-    points.forEach((value: number, index: number) => {
-      const x = padding + (index / (points.length - 1)) * chartWidth;
-      const y = height - padding - (value / maxValue) * chartHeight;
-      
-      if (index === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
-    
-    ctx.stroke();
+  const refreshChart = () => {
+    const chart = chartRef.current;
+    if (chart) {
+      chart.update();
+    }
   };
 
   const chartTitle = (config.options as any)?.plugins?.title?.text || 'Chart';
   const chartType = (config.type as string) || 'chart';
+  
+  // Prepare chart data for Chart.js
+  const chartData = (config.data as { labels?: string[]; datasets?: any[] }) || { labels: [], datasets: [] };
+  
+  if (error) {
+    return (
+      <Card className="w-full border-red-200">
+        <CardHeader>
+          <CardTitle className="text-lg text-red-600">Chart Error</CardTitle>
+          <CardDescription>{error}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700">Unable to render chart. Please check the chart configuration.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">
@@ -118,34 +120,65 @@ export function ChartViewer({ config }: ChartViewerProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-lg">{chartTitle}</CardTitle>
-            <CardDescription>Data visualization</CardDescription>
+            <CardDescription>
+              {chartData.labels?.length || 0} data points • {chartData.datasets?.length || 0} series
+            </CardDescription>
           </div>
-          <Badge variant="secondary">
-            {chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">
+              {chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart
+            </Badge>
+            {showActions && (
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={refreshChart}>
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={downloadChart}>
+                  <Download className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="relative">
-          <canvas
-            ref={canvasRef}
-            width={400}
-            height={300}
-            className="w-full max-w-md mx-auto border rounded"
-            style={{ backgroundColor: 'white' }}
-          />
-          <div className="mt-3 text-center text-sm text-gray-500">
-            Chart placeholder - Chart.js integration coming soon
-          </div>
+        <div className="relative bg-white rounded-lg p-4">
+          {isClient && chartData.labels && chartData.labels.length > 0 ? (
+            <div style={{ height: '400px' }}>
+              <Chart
+                ref={chartRef}
+                type={chartType as any}
+                data={{
+                  labels: chartData.labels || [],
+                  datasets: chartData.datasets || []
+                }}
+                options={{
+                  ...(config.options as any || {}),
+                  responsive: true,
+                  maintainAspectRatio: false,
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-64 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
+              <div className="text-center">
+                <div className="text-4xl mb-2">📊</div>
+                <p className="text-gray-500">Chart will appear here</p>
+                <p className="text-sm text-gray-400">Add data to see visualization</p>
+              </div>
+            </div>
+          )}
         </div>
         
-        {config.data ? (
+        {config.data && showActions ? (
           <div className="mt-4 text-xs">
             <details className="cursor-pointer">
-              <summary className="font-medium">View Data</summary>
-              <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
-                {JSON.stringify(config.data, null, 2)}
-              </pre>
+              <summary className="font-medium text-gray-700 hover:text-gray-900">View Raw Data</summary>
+              <div className="mt-2 p-3 bg-gray-50 border rounded text-xs overflow-auto max-h-40">
+                <pre className="text-gray-600">
+                  {JSON.stringify(config.data, null, 2)}
+                </pre>
+              </div>
             </details>
           </div>
         ) : null}
