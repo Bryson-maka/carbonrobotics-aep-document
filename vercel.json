@@ -1,7 +1,0 @@
-{
-  "buildCommand": "cd aep-blueprint && npm run build",
-  "outputDirectory": "aep-blueprint/.next",
-  "installCommand": "cd aep-blueprint && npm install",
-  "framework": "nextjs",
-  "devCommand": "cd aep-blueprint && npm run dev"
-}
