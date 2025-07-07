@@ -1,0 +1,48 @@
+{
+  "sections": [
+    {
+      "title": "LaserWeeder Performance Metrics",
+      "description": "Key performance indicators and success criteria for the LaserWeeder autonomous farming system",
+      "questions": [
+        "What defines operational success for the LaserWeeder in different field conditions?",
+        "How do we measure and optimize weed elimination efficiency?",
+        "What are the acceptable error rates for crop safety and weed detection?",
+        "How do we track and improve field coverage patterns?",
+        "What metrics indicate when maintenance or calibration is needed?"
+      ]
+    },
+    {
+      "title": "System Configuration & Calibration",
+      "description": "Initial setup, calibration procedures, and configuration best practices",
+      "questions": [
+        "What is the step-by-step process for initial system deployment?",
+        "How do we calibrate the laser targeting system for optimal accuracy?",
+        "What are the recommended operating parameters for different crop types?",
+        "How do we configure the vision system for various lighting conditions?",
+        "What safety interlocks and fail-safes need to be configured?"
+      ]
+    },
+    {
+      "title": "Field Operations & Best Practices",
+      "description": "Operational procedures and optimization strategies for field deployment",
+      "questions": [
+        "What pre-operation checks should be performed before each deployment?",
+        "How do we optimize route planning for maximum efficiency?",
+        "What are the best practices for operating in different weather conditions?",
+        "How do we handle edge cases like irregular field boundaries?",
+        "What is the recommended maintenance schedule during peak season?"
+      ]
+    },
+    {
+      "title": "Data Analysis & Continuous Improvement",
+      "description": "Leveraging operational data for system optimization and improvement",
+      "questions": [
+        "What data should we collect during operations for analysis?",
+        "How do we use field data to improve weed detection algorithms?",
+        "What insights can we derive from operational efficiency metrics?",
+        "How do we implement A/B testing for algorithm improvements?",
+        "What KPIs should we track for long-term performance trending?"
+      ]
+    }
+  ]
+}

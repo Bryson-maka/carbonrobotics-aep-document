@@ -8,10 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import { JsonManager } from "@/components/JsonManager";
+import { useToast } from "@/components/ui/toast";
 
 export default function AdminPage() {
   const { data: sections, refetch } = useSections();
+  const { addToast } = useToast();
   const [newSection, setNewSection] = useState({ title: "", description: "" });
   const [newQuestion, setNewQuestion] = useState({ sectionId: "", prompt: "" });
   const [loading, setLoading] = useState(false);
@@ -110,6 +112,62 @@ export default function AdminPage() {
     }
   };
 
+  const importFromJson = async (jsonData: { sections: Array<{ title: string; description?: string; questions: string[] }> }) => {
+    setLoading(true);
+    try {
+      // Get current max order index
+      const currentMaxOrder = Math.max(...(sections?.map(s => s.order_idx) || [0]));
+      
+      // Process each section
+      for (let i = 0; i < jsonData.sections.length; i++) {
+        const sectionData = jsonData.sections[i];
+        
+        // Create section
+        const { data: newSectionData, error: sectionError } = await supabase
+          .from("sections")
+          .insert({
+            title: sectionData.title,
+            description: sectionData.description || "",
+            order_idx: currentMaxOrder + i + 1
+          })
+          .select()
+          .single();
+
+        if (sectionError) throw sectionError;
+
+        // Create questions for this section
+        const questionsToInsert = sectionData.questions.map((question, idx) => ({
+          section_id: newSectionData.id,
+          prompt: question,
+          order_idx: idx + 1
+        }));
+
+        if (questionsToInsert.length > 0) {
+          const { error: questionsError } = await supabase
+            .from("questions")
+            .insert(questionsToInsert);
+
+          if (questionsError) throw questionsError;
+        }
+      }
+
+      refetch();
+      addToast({
+        message: `Successfully imported ${jsonData.sections.length} sections`,
+        type: "success"
+      });
+    } catch (error) {
+      console.error("Error importing from JSON:", error);
+      addToast({
+        message: "Failed to import sections. Please check the console for details.",
+        type: "error"
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-8">
       <div className="aep-header mb-8">
@@ -183,6 +241,14 @@ export default function AdminPage() {
             </Button>
           </CardContent>
         </Card>
+      </div>
+
+      {/* JSON Manager */}
+      <div className="mt-8">
+        <JsonManager 
+          sections={sections} 
+          onImport={importFromJson}
+        />
       </div>
 
       {/* Sections List */}
@@ -259,11 +325,6 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="mt-8 text-center">
-        <Button asChild className="aep-button">
-          <Link href="/">← Back to Main Blueprint</Link>
-        </Button>
-      </div>
     </div>
   );
 }

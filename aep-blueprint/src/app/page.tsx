@@ -49,15 +49,8 @@ export default function Home() {
         </header>
 
         {/* Controls bar */}
-        <div className="aep-section flex justify-between items-center" style={{ backgroundColor: 'var(--color-bg-surface)' }}>
-          <div className="flex items-center gap-4">
-            <GlobalProgressWidget />
-          </div>
-          <div className="flex items-center gap-2">
-            <a href="/setup" className="aep-button text-sm">
-              Setup Database
-            </a>
-          </div>
+        <div className="aep-section flex justify-center items-center" style={{ backgroundColor: 'var(--color-bg-surface)' }}>
+          <GlobalProgressWidget />
         </div>
 
         {/* Main content */}
