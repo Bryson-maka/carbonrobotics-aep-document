@@ -1,98 +1,116 @@
-# Advanced Engineering & Performance Team Scope
+# Carbon Robotics AEP Blueprint
 
-This repository contains the living document for the Carbon Robotics Advanced Engineering & Performance team initiative.
+Advanced Engineering & Performance Team Scope - Production Document Management System
 
-## 📋 Live Document
+## Overview
 
-🔗 **[View the Interactive Document](https://bryson-maka.github.io/carbonrobotics-aep-document/)**
+This is the production-ready document management system for the Carbon Robotics Advanced Engineering & Performance (AEP) team. It provides real-time collaborative editing, rich content support, and comprehensive administrative tools.
 
-## 📖 About
+## Tech Stack
 
-The Advanced Engineering & Performance team document is designed to establish data-driven performance excellence across the Carbon Robotics LaserWeeder fleet. This interactive document serves as both a mission statement and a practical planning document for team discussions and decision-making.
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS v4
+- **Backend**: Supabase (PostgreSQL, Auth, Realtime, Storage)
+- **UI Components**: Custom ShadCN/UI implementation
+- **Rich Text**: TipTap editor
+- **Charts**: Chart.js with react-chartjs-2
+- **Deployment**: Vercel
 
-### Features
+## Quick Start
 
-- **Interactive Mode**: Edit and track answers to outstanding questions
-- **Progress Tracking**: Visual indicators showing completion status
-- **Draft/Final Toggle**: Mark answers as draft or final with weighted completion
-- **Export/Import**: Share progress via JSON files
-- **Responsive Design**: Works on desktop and mobile devices
+```bash
+# Install dependencies
+npm install
 
-### Question Status System
+# Set up environment variables
+cp .env.local.example .env.local
+# Edit .env.local with your Supabase credentials
 
-- 🔴 **Red (0%)**: Unanswered questions
-- 🟠 **Orange (50%)**: Draft answers
-- 🟢 **Green (100%)**: Final answers
+# Run development server
+npm run dev
 
-## ⚙️ Setup
-
-### Prerequisites
-- A Supabase account and project
-- Access to Carbon Robotics Google domain (@carbonrobotics.com)
-
-### Configuration Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone <repo-url>
-   cd carbonrobotics-aep-document
-   ```
-
-2. **Set up Supabase**
-   - Create tables by running SQL files in Supabase Dashboard (SQL Editor):
-     - Run `db/001_init_answers.sql` to create the answers table
-     - Run `db/002_seed_answers.sql` to seed initial questions
-   
-3. **Configure client**
-   - Copy `supabaseClient.js.example` → `supabaseClient.js`
-   - Replace `YOUR_PUBLIC_ANON_KEY` with your project's anon key
-   - Get your key from: Supabase Dashboard → Settings → API → Project API keys
-
-4. **Run locally**
-   ```bash
-   python3 -m http.server 3000
-   ```
-   Then open http://localhost:3000
-
-5. **First visit**
-   - You'll be prompted to sign in with Google
-   - Only @carbonrobotics.com accounts have access (enforced by RLS)
-
-## 🚀 Usage
-
-1. Visit the [live document](https://bryson-maka.github.io/carbonrobotics-aep-document/)
-2. Sign in with your Carbon Robotics Google account
-3. Answers save automatically as you type (with 500ms debounce)
-4. Toggle between Draft/Final status for each answer
-5. Changes sync in real-time across all open tabs/users
-6. Use Export/Import for offline backup or sharing
-
-## 💾 Data Persistence
-
-- **Real-time Database**: Answers stored in Supabase with automatic sync
-- **Collaborative Editing**: Multiple users can edit simultaneously
-- **Export Feature**: Download current state as JSON for backup
-- **Import Feature**: Restore from JSON backup files
-- **Row-Level Security**: Only @carbonrobotics.com users can access
-
-## 🎨 Design
-
-The document uses Carbon Robotics' official color scheme and design language, matching the main robot web interface for consistency.
-
-## 📁 Repository Structure
-
-```
-/
-├── db/
-│   ├── 001_init_answers.sql                  # Creates answers table with RLS
-│   └── 002_seed_answers.sql                  # Seeds initial question IDs
-├── index.html                                 # Main interactive document (GitHub Pages)
-├── supabaseClient.js                         # Supabase configuration (gitignored)
-├── supabaseClient.js.example                 # Template for Supabase config
-└── README.md                                 # This file
+# Build for production
+npm run build
 ```
 
----
+## Key Features
 
-**Carbon Robotics - Advanced Engineering & Performance Team**  
-*Data-driven performance excellence for the LaserWeeder platform*
+- 📝 Rich text editing with TipTap
+- 📊 Data visualization with Chart.js
+- 🔄 Real-time collaboration
+- 📱 Responsive design
+- 🔐 Google OAuth (restricted to @carbonrobotics.com)
+- 📋 JSON import/export for bulk content creation
+- 🎯 Drag-and-drop reordering
+- 📜 Version history with diff viewer
+- 📄 PDF and Markdown export
+- 👥 Role-based access control
+
+## Project Structure
+
+```
+├── src/
+│   ├── app/              # Next.js App Router pages
+│   ├── components/       # React components
+│   ├── hooks/           # Custom React hooks
+│   ├── services/        # API service layer
+│   ├── types/           # TypeScript types
+│   └── lib/             # Utilities and configs
+├── supabase/
+│   ├── migrations/      # Database migrations
+│   └── functions/       # Edge functions
+├── public/              # Static assets
+└── legacy/              # Archived prototype files
+```
+
+## Documentation
+
+- [Production Deployment Plan](./PRODUCTION_DEPLOYMENT_PLAN.md)
+- [Project Status](./PROJECT_STATUS.md)
+- [Sprint 3 Demo Guide](./SPRINT3_DEMO.md)
+- [JSON Import Guide](./JSON_IMPORT_GUIDE.md)
+- [Claude Code Guide](./CLAUDE.md)
+
+## Environment Variables
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Deployment
+
+This project is configured for automatic deployment to Vercel:
+
+1. Push to `main` branch triggers automatic deployment
+2. Pull requests get preview deployments
+3. Environment variables must be set in Vercel dashboard
+
+## Development
+
+```bash
+# Run linting
+npm run lint
+
+# Type checking
+npx tsc --noEmit
+
+# Run development server with Turbopack
+npm run dev
+```
+
+## Legacy Archive
+
+The original HTML prototype has been archived in the `legacy/` directory for historical reference. The current Next.js application is the active production system.
+
+## Contributing
+
+1. Create a feature branch from `main`
+2. Make your changes following the coding standards
+3. Run `npm run lint` and `npm run build` before committing
+4. Create a pull request with a descriptive title
+5. Wait for CI checks and code review
+
+## License
+
+Property of Carbon Robotics. All rights reserved.
