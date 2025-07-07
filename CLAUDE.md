@@ -2,7 +2,7 @@
 
 ## 🏗️ Architecture Overview
 
-This is the Carbon Robotics Advanced Engineering & Performance (AEP) Blueprint system - a sophisticated document management platform with real-time collaboration, built for engineering excellence.
+This is the Carbon Robotics Advanced Engineering & Performance (AEP) Blueprint system - a sophisticated document management platform with real-time collaboration, built for engineering excellence. The current date is 07-2025.
 
 ### Core Architecture Principles
 - **Modern Next.js 15 App Router** - Server components by default, client components only when necessary
