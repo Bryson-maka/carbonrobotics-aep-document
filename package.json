@@ -1,0 +1,12 @@
+{
+  "name": "aep-blueprint-root",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd aep-blueprint && npm run dev",
+    "build": "cd aep-blueprint && npm run build",
+    "start": "cd aep-blueprint && npm run start",
+    "lint": "cd aep-blueprint && npm run lint",
+    "install:app": "cd aep-blueprint && npm install"
+  }
+}
