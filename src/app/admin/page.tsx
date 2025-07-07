@@ -23,7 +23,8 @@ export default function AdminPage() {
     
     setLoading(true);
     try {
-      const maxOrder = Math.max(...(sections?.map(s => s.order_idx) || [0]));
+      const orderValues = sections?.map(s => s.order_idx) || [];
+      const maxOrder = orderValues.length > 0 ? Math.max(...orderValues) : 0;
       
       const { error } = await supabase
         .from("sections")
@@ -116,7 +117,8 @@ export default function AdminPage() {
     setLoading(true);
     try {
       // Get current max order index
-      const currentMaxOrder = Math.max(...(sections?.map(s => s.order_idx) || [0]));
+      const orderValues = sections?.map(s => s.order_idx) || [];
+      const currentMaxOrder = orderValues.length > 0 ? Math.max(...orderValues) : 0;
       
       // Process each section
       for (let i = 0; i < jsonData.sections.length; i++) {
