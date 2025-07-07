@@ -1,0 +1,4 @@
+Deploy test: 2025-07-07 14:59 PST
+Repository restructured - Next.js at root
+Navigation component added
+JSON import feature included
